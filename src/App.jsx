@@ -6,6 +6,7 @@ import OptionsPanel from "./components/OptionsPanel";
 import CollectionsPanel from "./components/CollectionsPanel";
 import HistoryPanel from "./components/HistoryPanel";
 import SettingsPanel from "./components/SettingsPanel";
+import BottomNavBar from "./components/BottomNavBar";
 
 function App() {
   const [activePanel, setActivePanel] = useState("collections");
@@ -24,16 +25,15 @@ function App() {
   };
 
   return (
-    <div className="bg-primary_bg w-screen h-screen text-primary_text">
+    <div className="bg-primary_bg w-[screen] h-[97vh] text-primary_text">
       <PanelGroup autoSaveId="dashboard" direction="horizontal">
-        <Panel defaultSize={5} className="flex flex-col bg-secondary_bg">
+        <div className="flex flex-col bg-secondary_bg">
           <OptionsPanel
             activePanel={activePanel}
             setActivePanel={setActivePanel}
           />
-        </Panel>
-        <PanelResizeHandle />
-        <Panel className="flex flex-col bg-primary_bg">
+        </div>
+        <Panel defaultSize={25} minSize={15} className="flex flex-col bg-primary_bg">
           {renderActivePanel()}
         </Panel>
         <PanelResizeHandle className="w-3 bg-secondary_bg" />
@@ -41,6 +41,7 @@ function App() {
           <div>right</div>
         </Panel>
       </PanelGroup>
+      <BottomNavBar />
     </div>
   );
 }
