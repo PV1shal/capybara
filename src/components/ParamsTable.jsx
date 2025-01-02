@@ -23,10 +23,6 @@ const ParamsTable = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(rowsData);
-  }, [rowsData]);
-
   return (
     <div className="space-y-2 m-5">
       <div className="text-sm text-gray-400">Query Params</div>

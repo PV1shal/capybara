@@ -1,13 +1,12 @@
-import { useRef, useState } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { useState } from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import "./App.css";
-import OptionsPanel from "./components/OptionsPanel";
-import CollectionsPanel from "./components/CollectionsPanel";
-import HistoryPanel from "./components/HistoryPanel";
-import SettingsPanel from "./components/SettingsPanel";
+import OptionsPanel from "./components/panels/OptionsPanel";
+import CollectionsPanel from "./components/panels/CollectionsPanel";
+import HistoryPanel from "./components/panels/HistoryPanel";
+import SettingsPanel from "./components/panels/SettingsPanel";
 import BottomNavBar from "./components/BottomNavBar";
-import RequestPanel from "./components/RequestPanel";
+import RequestPanel from "./components/panels/RequestPanel";
 
 function App() {
   const [activePanel, setActivePanel] = useState("collections");

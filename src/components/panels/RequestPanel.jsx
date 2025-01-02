@@ -13,10 +13,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Input } from "./ui/input";
+import { Input } from "../ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import ParamsTable from "./ParamsTable";
-import BodyTable from "./BodyTable";
+import ParamsTable from "../ParamsTable";
+import BodyTable from "../BodyTable";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -31,6 +31,7 @@ const HTTP_METHODS = [
 const RequestPanel = () => {
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(HTTP_METHODS[0].value);
+  const [URL, setURL] = useState("");
 
   const getCurrentColor = () => {
     return (
@@ -39,11 +40,14 @@ const RequestPanel = () => {
     );
   };
 
+  const onChangeURL = (event) => {
+    setURL(event.target.value);
+  }
+
   return (
     <div className="space-y-2">
       <div>
-        <b style={{ color: getCurrentColor() }}>{selectedMethod}</b> Collection
-        1 / API NAME
+        <b style={{ color: getCurrentColor() }}>{selectedMethod}</b> Collection 1 / API NAME
       </div>
       <div className="flex flex-row items-center">
         <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
@@ -91,7 +95,7 @@ const RequestPanel = () => {
               </Command>
             </PopoverContent>
           </Popover>
-          <Input className="border-0 flex-1" placeholder="Enter URL" />
+          <Input className="border-0 flex-1" value={URL} onChange={onChangeURL} placeholder="Enter URL" />
         </div>
         <Button className="bg-primary_button">SEND</Button>
       </div>

@@ -1,7 +1,7 @@
 import { FaFilter } from "react-icons/fa";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
-import NewRequestModal from "./NewRequestModal";
+import NewRequestModal from "../NewRequestModal";
 
 const CollectionsPanel = () => {
 
