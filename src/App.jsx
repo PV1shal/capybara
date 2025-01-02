@@ -6,7 +6,7 @@ import CollectionsPanel from "./components/panels/CollectionsPanel";
 import HistoryPanel from "./components/panels/HistoryPanel";
 import SettingsPanel from "./components/panels/SettingsPanel";
 import BottomNavBar from "./components/BottomNavBar";
-import RequestPanel from "./components/panels/RequestPanel";
+import RequestPanel from "./components/RequestTab";
 
 function App() {
   const [activePanel, setActivePanel] = useState("collections");

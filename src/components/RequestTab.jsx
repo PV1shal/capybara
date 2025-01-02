@@ -13,10 +13,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/input";
+import { Input } from "./ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import ParamsTable from "../ParamsTable";
-import BodyTable from "../BodyTable";
+import ParamsTable from "./ParamsTable";
+import BodyTable from "./BodyTable";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -33,6 +33,38 @@ const RequestPanel = () => {
   const [selectedMethod, setSelectedMethod] = useState(HTTP_METHODS[0].value);
   const [URL, setURL] = useState("");
 
+  const [paramsData, setParamsData] = useState({
+    0: { key: "", value: "", description: "", isIncluded: true },
+  });
+  const [headersData, setHeadersData] = useState({
+    0: { key: "", value: "", description: "", isIncluded: true },
+  });
+  const [bodyData, setBodyData] = useState({
+    0: { key: "", value: "", description: "", isIncluded: true },
+  });
+
+  const getFormattedData = () => {
+    const validParams = Object.values(paramsData)
+      .filter((row) => row.key && row.value && row.isIncluded)
+      .reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+
+    const validHeaders = Object.values(headersData)
+      .filter((row) => row.key && row.value && row.isIncluded)
+      .reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+
+    const validBody = Object.values(bodyData)
+      .filter((row) => row.key && row.value && row.isIncluded)
+      .reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
+
+    return { params: validParams, headers: validHeaders, body: validBody };
+  };
+
+  const handleSend = () => {
+    const { params, headers, body } = getFormattedData();
+    // Use the formatted data for API call
+    console.log({ method: selectedMethod, url: URL, params, headers, body });
+  };
+
   const getCurrentColor = () => {
     return (
       HTTP_METHODS.find((method) => method.value === selectedMethod)?.color ||
@@ -42,12 +74,13 @@ const RequestPanel = () => {
 
   const onChangeURL = (event) => {
     setURL(event.target.value);
-  }
+  };
 
   return (
     <div className="space-y-2">
       <div>
-        <b style={{ color: getCurrentColor() }}>{selectedMethod}</b> Collection 1 / API NAME
+        <b style={{ color: getCurrentColor() }}>{selectedMethod}</b> Collection
+        1 / API NAME
       </div>
       <div className="flex flex-row items-center">
         <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
@@ -95,9 +128,14 @@ const RequestPanel = () => {
               </Command>
             </PopoverContent>
           </Popover>
-          <Input className="border-0 flex-1" value={URL} onChange={onChangeURL} placeholder="Enter URL" />
+          <Input
+            className="border-0 flex-1"
+            value={URL}
+            onChange={onChangeURL}
+            placeholder="Enter URL"
+          />
         </div>
-        <Button className="bg-primary_button">SEND</Button>
+        <Button className="bg-primary_button" onClick={handleSend}>SEND</Button>
       </div>
       <Tabs defaultValue="params" className="w-full">
         <TabsList className="bg-transparent border-b border-primary_border">
@@ -122,15 +160,15 @@ const RequestPanel = () => {
         </TabsList>
 
         <TabsContent value="params" className="mt-4">
-          <ParamsTable />
+          <ParamsTable rowsData={paramsData} setRowsData={setParamsData} />
         </TabsContent>
 
         <TabsContent value="headers" className="mt-4">
-          <ParamsTable />
+          <ParamsTable rowsData={paramsData} setRowsData={setParamsData} />
         </TabsContent>
 
         <TabsContent value="body" className="mt-4">
-          <BodyTable />
+          <BodyTable rowsData={bodyData} setRowsData={setBodyData} />
         </TabsContent>
       </Tabs>
     </div>

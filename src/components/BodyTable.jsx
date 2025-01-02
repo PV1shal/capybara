@@ -2,19 +2,16 @@ import { useState } from "react";
 import RequestInputTable from "./RequestInputTable";
 import { cn } from "@/lib/utils";
 
-const BodyTable = () => {
+const BodyTable = ({ rowsData, setRowsData }) => {
   const [bodyType, setBodyType] = useState("none");
-  const [rowsData, setRowsData] = useState({
-    0: { key: "", value: "", description: "", isIncluded: true }
-  });
   const [nextId, setNextId] = useState(1);
 
   const addRow = () => {
-    setRowsData(prev => ({
+    setRowsData((prev) => ({
       ...prev,
-      [nextId]: { key: "", value: "", description: "", isIncluded: true }
+      [nextId]: { key: "", value: "", description: "", isIncluded: true },
     }));
-    setNextId(prev => prev + 1);
+    setNextId((prev) => prev + 1);
   };
 
   const deleteRow = (id) => {
@@ -57,11 +54,11 @@ const BodyTable = () => {
         </button>
       </div>
       {bodyType !== "none" && (
-        <RequestInputTable 
-          rowsData={rowsData} 
-          addRow={addRow} 
-          deleteRow={deleteRow} 
-          setRowsData={setRowsData} 
+        <RequestInputTable
+          rowsData={rowsData}
+          addRow={addRow}
+          deleteRow={deleteRow}
+          setRowsData={setRowsData}
         />
       )}
     </div>

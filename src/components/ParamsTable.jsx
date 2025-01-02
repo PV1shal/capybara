@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import RequestInputTable from "./RequestInputTable";
 
-const ParamsTable = () => {
-  const [rowsData, setRowsData] = useState({
-    0: { key: "", value: "", description: "", isIncluded: true },
-  });
+const ParamsTable = ({ rowsData, setRowsData }) => {
   const [nextId, setNextId] = useState(1);
 
   const addRow = () => {
