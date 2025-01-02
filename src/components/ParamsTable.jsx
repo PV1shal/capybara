@@ -1,24 +1,41 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RequestInputTable from "./RequestInputTable";
 
 const ParamsTable = () => {
-  const [rows, setRows] = useState([{ key: "", value: "", description: "" }]);
+  const [rowsData, setRowsData] = useState({
+    0: { key: "", value: "", description: "", isIncluded: true },
+  });
+  const [nextId, setNextId] = useState(1);
 
   const addRow = () => {
-    setRows([...rows, { key: "", value: "", description: "" }]);
+    setRowsData((prev) => ({
+      ...prev,
+      [nextId]: { key: "", value: "", description: "", isIncluded: true },
+    }));
+    setNextId((prev) => prev + 1);
   };
 
-  const deleteRow = (index) => {
-    if (rows.length > 1) {
-      const newRows = rows.filter((_, i) => i !== index);
-      setRows(newRows);
+  const deleteRow = (id) => {
+    if (Object.keys(rowsData).length > 1) {
+      const newRows = { ...rowsData };
+      delete newRows[id];
+      setRowsData(newRows);
     }
   };
+
+  useEffect(() => {
+    console.log(rowsData);
+  }, [rowsData]);
 
   return (
     <div className="space-y-2 m-5">
       <div className="text-sm text-gray-400">Query Params</div>
-      <RequestInputTable rows={rows} addRow={addRow} deleteRow={deleteRow} setRows={setRows} />
+      <RequestInputTable
+        rowsData={rowsData}
+        addRow={addRow}
+        deleteRow={deleteRow}
+        setRowsData={setRowsData}
+      />
     </div>
   );
 };

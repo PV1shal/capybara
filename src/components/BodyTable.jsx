@@ -1,21 +1,27 @@
 import { useState } from "react";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
-import { IoIosClose } from "react-icons/io";
 import RequestInputTable from "./RequestInputTable";
+import { cn } from "@/lib/utils";
 
 const BodyTable = () => {
   const [bodyType, setBodyType] = useState("none");
-  const [rows, setRows] = useState([{ key: "", value: "", description: "" }]);
+  const [rowsData, setRowsData] = useState({
+    0: { key: "", value: "", description: "", isIncluded: true }
+  });
+  const [nextId, setNextId] = useState(1);
 
   const addRow = () => {
-    setRows([...rows, { key: "", value: "", description: "" }]);
+    setRowsData(prev => ({
+      ...prev,
+      [nextId]: { key: "", value: "", description: "", isIncluded: true }
+    }));
+    setNextId(prev => prev + 1);
   };
 
-  const deleteRow = (index) => {
-    if (rows.length > 1) {
-      const newRows = rows.filter((_, i) => i !== index);
-      setRows(newRows);
+  const deleteRow = (id) => {
+    if (Object.keys(rowsData).length > 1) {
+      const newRows = { ...rowsData };
+      delete newRows[id];
+      setRowsData(newRows);
     }
   };
 
@@ -50,13 +56,12 @@ const BodyTable = () => {
           raw
         </button>
       </div>
-
-      {bodyType === "form-data" && (
-        <RequestInputTable
-          rows={rows}
-          addRow={addRow}
-          deleteRow={deleteRow}
-          setRows={setRows}
+      {bodyType !== "none" && (
+        <RequestInputTable 
+          rowsData={rowsData} 
+          addRow={addRow} 
+          deleteRow={deleteRow} 
+          setRowsData={setRowsData} 
         />
       )}
     </div>
