@@ -10,6 +10,7 @@ export default {
   			secondary_bg: '#262626',
   			primary_button: '#008080',
   			primary_select: '#008080',
+			primary_border: '#3A3A3A',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

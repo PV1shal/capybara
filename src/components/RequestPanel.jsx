@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
@@ -16,6 +14,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import ParamsTable from "./ParamsTable";
+import BodyTable from "./BodyTable";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -45,7 +46,7 @@ const RequestPanel = () => {
         1 / API NAME
       </div>
       <div className="flex flex-row items-center">
-        <div className="flex flex-row border-[2px] rounded-lg m-2 border-[#3a3a3a] w-full">
+        <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
           <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <Button
@@ -59,7 +60,7 @@ const RequestPanel = () => {
                 <ChevronsUpDown className="h-4 w-4 opacity-50" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[120px] p-0 bg-[#1c1c1c] border-[#3a3a3a]">
+            <PopoverContent className="w-[120px] p-0 bg-[#1c1c1c] border-primary_border">
               <Command className="bg-transparent">
                 <CommandList>
                   <CommandGroup>
@@ -94,6 +95,40 @@ const RequestPanel = () => {
         </div>
         <Button className="bg-primary_button">SEND</Button>
       </div>
+      <Tabs defaultValue="params" className="w-full">
+        <TabsList className="bg-transparent border-b border-primary_border">
+          <TabsTrigger
+            value="params"
+            className="data-[state=active]:text-primary_text data-[state=active]:bg-primary_select rounded-none"
+          >
+            Params
+          </TabsTrigger>
+          <TabsTrigger
+            value="headers"
+            className="data-[state=active]:text-primary_text data-[state=active]:bg-primary_select rounded-none"
+          >
+            Headers
+          </TabsTrigger>
+          <TabsTrigger
+            value="body"
+            className="data-[state=active]:text-primary_text data-[state=active]:bg-primary_select rounded-none"
+          >
+            Body
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="params" className="mt-4">
+          <ParamsTable />
+        </TabsContent>
+
+        <TabsContent value="headers" className="mt-4">
+          <ParamsTable />
+        </TabsContent>
+
+        <TabsContent value="body" className="mt-4">
+          <BodyTable />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
