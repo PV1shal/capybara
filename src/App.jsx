@@ -7,6 +7,7 @@ import CollectionsPanel from "./components/CollectionsPanel";
 import HistoryPanel from "./components/HistoryPanel";
 import SettingsPanel from "./components/SettingsPanel";
 import BottomNavBar from "./components/BottomNavBar";
+import RequestPanel from "./components/RequestPanel";
 
 function App() {
   const [activePanel, setActivePanel] = useState("collections");
@@ -38,7 +39,7 @@ function App() {
         </Panel>
         <PanelResizeHandle className="w-3 bg-secondary_bg" />
         <Panel defaultSize={25}>
-          <div>right</div>
+          <RequestPanel />
         </Panel>
       </PanelGroup>
       <BottomNavBar />
