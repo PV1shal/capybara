@@ -61,6 +61,11 @@ const BodyTable = ({ rowsData, setRowsData }) => {
           setRowsData={setRowsData}
         />
       )}
+      {bodyType === "none" && 
+        <div className="w-full flex flex-col text-sm opacity-45 justify-center items-center">
+          Request doesn't have/need body.
+        </div>
+      }
     </div>
   );
 };

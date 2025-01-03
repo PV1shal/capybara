@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
 import {
@@ -17,6 +17,7 @@ import { Input } from "./ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ParamsTable from "./ParamsTable";
 import BodyTable from "./BodyTable";
+import { invoke } from "@tauri-apps/api/core";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -62,6 +63,13 @@ const RequestPanel = () => {
   const handleSend = () => {
     const { params, headers, body } = getFormattedData();
     // Use the formatted data for API call
+
+    invoke("send_request", {
+      paramsData: JSON.stringify(paramsData),
+      headersData: JSON.stringify(headersData),
+      bodyData: JSON.stringify(bodyData),
+    });
+
     console.log({ method: selectedMethod, url: URL, params, headers, body });
   };
 
@@ -75,6 +83,20 @@ const RequestPanel = () => {
   const onChangeURL = (event) => {
     setURL(event.target.value);
   };
+
+  useEffect(() => {
+    let baseUrl = URL.split("?")[0];
+    const validParams = Object.values(paramsData)
+      .filter((row) => row.key && row.value && row.isIncluded)
+      .map(
+        (row) =>
+          `${encodeURIComponent(row.key)}=${encodeURIComponent(row.value)}`
+      );
+    if (validParams.length > 0) {
+      baseUrl += "?" + validParams.join("&");
+    }
+    setURL(baseUrl);
+  }, [paramsData]);
 
   return (
     <div className="space-y-2">
@@ -135,7 +157,9 @@ const RequestPanel = () => {
             placeholder="Enter URL"
           />
         </div>
-        <Button className="bg-primary_button" onClick={handleSend}>SEND</Button>
+        <Button className="bg-primary_button" onClick={handleSend}>
+          SEND
+        </Button>
       </div>
       <Tabs defaultValue="params" className="w-full">
         <TabsList className="bg-transparent border-b border-primary_border">
