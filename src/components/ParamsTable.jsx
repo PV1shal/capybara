@@ -17,6 +17,10 @@ const ParamsTable = ({ rowsData, setRowsData }) => {
       const newRows = { ...rowsData };
       delete newRows[id];
       setRowsData(newRows);
+    } else {
+      const newRows = { ...rowsData };
+      newRows[id] = { key: "", value: "", description: "", isIncluded: true };
+      setRowsData(newRows);
     }
   };
 
