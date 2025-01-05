@@ -19,6 +19,7 @@ import ParamsTable from "./ParamsTable";
 import BodyTable from "./BodyTable";
 import { invoke } from "@tauri-apps/api/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
+import ResponseTab from "./ResponseTab";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -44,6 +45,7 @@ const RequestPanel = () => {
   const [bodyData, setBodyData] = useState({
     0: { key: "", value: "", description: "", isIncluded: true },
   });
+  const [httpResponse, setHttpResponse] = useState(null);
 
   const getFormattedData = () => {
     const validParams = Object.values(paramsData)
@@ -68,12 +70,15 @@ const RequestPanel = () => {
     invoke("send_request", {
       methodType: selectedMethod,
       url: URL,
-      paramsData: JSON.stringify(paramsData),
-      headersData: JSON.stringify(headersData),
-      bodyData: JSON.stringify(bodyData),
+      paramsData: JSON.stringify(params),
+      headersData: JSON.stringify(headers),
+      bodyData: JSON.stringify(body),
     }).then((resp) => {
       console.log(resp);
-    });
+      setHttpResponse(resp);
+    }).catch((error) => {
+      alert(error);
+    })
   };
 
   const getCurrentColor = () => {
@@ -204,9 +209,7 @@ const RequestPanel = () => {
       </Panel>
       <PanelResizeHandle className=" h-2 bg-secondary_bg" />
       <Panel>
-        <div>
-          Response
-        </div>
+        <ResponseTab responseData={httpResponse} />
       </Panel>
     </PanelGroup>
   );
