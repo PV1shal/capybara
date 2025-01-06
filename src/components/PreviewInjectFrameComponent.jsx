@@ -35,7 +35,7 @@ const PreviewInjectFrameComponent = ({ body }) => {
   return (
     <iframe
       srcDoc={iframeContent}
-      className="w-full h-full border-none"
+      className="w-full h-full border-none bg-primary_text"
       sandbox="allow-same-origin"
       title="Preview"
     />
