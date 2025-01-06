@@ -4,9 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
-    TableFooter,
     TableHead,
     TableHeader,
     TableRow,
@@ -65,8 +63,38 @@ const ResponseTab = ({ responseData }) => {
                             </div>
                         </div>
                     </TabsList>
-                    <TabsContent value="body" className="w-full h-full">
-                        {responseData.body}
+                    <TabsContent value="body" className="flex-grow overflow-hidden">
+                        <Tabs className="flex flex-col h-full items-start">
+                            <TabsList className="bg-secondary_bg">
+                                <TabsTrigger value="pretty">Pretty</TabsTrigger>
+                                <TabsTrigger value="raw">Raw</TabsTrigger>
+                                <TabsTrigger value="preview">Preview</TabsTrigger>
+                                <TabsTrigger value="visualize">Visualize</TabsTrigger>
+                            </TabsList>
+                            <TabsContent value="pretty" className="flex-grow overflow-auto">
+                                Pretty goes here
+                            </TabsContent>
+                            <TabsContent value="raw" className="w-full flex-grow overflow-auto 
+                                [&::-webkit-scrollbar]:w-2
+                                [&::-webkit-scrollbar-track]:bg-transparent
+                                [&::-webkit-scrollbar-thumb]:bg-gray-500/50
+                                [&::-webkit-scrollbar-thumb]:rounded-full
+                                [&::-webkit-scrollbar-thumb]:border-2
+                                [&::-webkit-scrollbar-thumb]:border-solid
+                                [&::-webkit-scrollbar-thumb]:border-transparent
+                                [&::-webkit-scrollbar-thumb]:bg-clip-padding
+                                hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70">
+                                <pre className="font-mono whitespace-pre-wrap p-4">
+                                    {responseData.body}
+                                </pre>
+                            </TabsContent>
+                            <TabsContent value="preview" className="flex-grow overflow-auto">
+                                Preview goes here
+                            </TabsContent>
+                            <TabsContent value="visualize" className="flex-grow overflow-auto">
+                                Visualize goes here
+                            </TabsContent>
+                        </Tabs>
                     </TabsContent>
                     <TabsContent value="headers" className="flex-grow overflow-hidden">
                         <div className="h-full overflow-auto 
