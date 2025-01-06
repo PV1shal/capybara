@@ -25,7 +25,7 @@ function App() {
   };
 
   return (
-    <div className="bg-primary_bg w-[screen] h-[97vh] text-primary_text">
+    <div className="bg-primary_bg w-screen h-screen text-primary_text">
       <PanelGroup autoSaveId="dashboard" direction="horizontal">
         <div className="flex flex-col bg-secondary_bg w-fit">
           <OptionsPanel
@@ -41,7 +41,7 @@ function App() {
           <RequestPanel />
         </Panel>
       </PanelGroup>
-      <BottomNavBar />
+      {/* <BottomNavBar /> */}
     </div>
   );
 }

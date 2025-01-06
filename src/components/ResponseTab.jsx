@@ -1,3 +1,4 @@
+import PreviewInjectFrameComponent from "./PreviewInjectFrameComponent";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Separator } from "@/components/ui/separator";
@@ -41,7 +42,7 @@ const ResponseTab = ({ responseData }) => {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full overflow-hidden">
             {!responseData ? (
                 <div className="font-bold">Response</div>
             ) : (
@@ -88,8 +89,8 @@ const ResponseTab = ({ responseData }) => {
                                     {responseData.body}
                                 </pre>
                             </TabsContent>
-                            <TabsContent value="preview" className="flex-grow overflow-auto">
-                                Preview goes here
+                            <TabsContent value="preview" className="w-full flex-grow overflow-hidden">
+                                <PreviewInjectFrameComponent body={responseData.body} />
                             </TabsContent>
                             <TabsContent value="visualize" className="flex-grow overflow-auto">
                                 Visualize goes here
