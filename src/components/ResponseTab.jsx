@@ -71,7 +71,6 @@ const ResponseTab = ({ responseData }) => {
                                 <TabsTrigger value="pretty">Pretty</TabsTrigger>
                                 <TabsTrigger value="raw">Raw</TabsTrigger>
                                 <TabsTrigger value="preview">Preview</TabsTrigger>
-                                <TabsTrigger value="visualize">Visualize</TabsTrigger>
                             </TabsList>
                             <TabsContent value="pretty" className="w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100
                                 [&::-webkit-scrollbar]:w-2
@@ -101,9 +100,6 @@ const ResponseTab = ({ responseData }) => {
                             </TabsContent>
                             <TabsContent value="preview" className="w-full flex-grow overflow-hidden">
                                 <PreviewInjectFrameComponent body={responseData.body} />
-                            </TabsContent>
-                            <TabsContent value="visualize" className="flex-grow overflow-auto">
-                                Visualize goes here
                             </TabsContent>
                         </Tabs>
                     </TabsContent>
