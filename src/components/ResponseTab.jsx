@@ -66,7 +66,7 @@ const ResponseTab = ({ responseData }) => {
                         </div>
                     </TabsList>
                     <TabsContent value="body" className="flex-grow overflow-hidden">
-                        <Tabs className="flex flex-col h-full items-start">
+                        <Tabs defaultValue="pretty" className="flex flex-col h-full items-start">
                             <TabsList className="bg-secondary_bg">
                                 <TabsTrigger value="pretty">Pretty</TabsTrigger>
                                 <TabsTrigger value="raw">Raw</TabsTrigger>

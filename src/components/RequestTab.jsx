@@ -74,7 +74,6 @@ const RequestPanel = () => {
       headersData: JSON.stringify(headers),
       bodyData: JSON.stringify(body),
     }).then((resp) => {
-      console.log(resp);
       setHttpResponse(resp);
     }).catch((error) => {
       alert(error);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import Prism from 'prismjs';
 import 'prismjs/components/prism-markup';
 import 'prismjs/components/prism-json';
@@ -6,10 +6,14 @@ import 'prismjs/components/prism-javascript';
 import 'prismjs/components/prism-css';
 
 const CodePrettier = ({ code }) => {
+    const [formattedCode, setFormattedCode] = useState('');
+    const [isBeautifierLoaded, setIsBeautifierLoaded] = useState(false);
+
     useEffect(() => {
         const script = document.createElement('script');
         script.src = 'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js';
         script.async = true;
+        script.onload = () => setIsBeautifierLoaded(true);
         document.body.appendChild(script);
         return () => document.body.removeChild(script);
     }, []);
@@ -35,32 +39,25 @@ const CodePrettier = ({ code }) => {
     const applyCustomStyling = (html) => {
         if (!html) return '';
 
-        // Replace Prism's default color classes with Tailwind classes
         return html
-            // HTML Tags
             .replace(/<span class="token tag">/g, '<span class="text-blue-400">')
-            // Tag brackets
             .replace(/<span class="token punctuation">/g, '<span class="text-gray-400">')
-            // Attributes
             .replace(/<span class="token attr-name">/g, '<span class="text-sky-300">')
-            // Attribute values
             .replace(/<span class="token attr-value">/g, '<span class="text-orange-300">')
-            // Strings
             .replace(/<span class="token string">/g, '<span class="text-orange-300">')
-            // Numbers
             .replace(/<span class="token number">/g, '<span class="text-purple-300">')
-            // Keywords
             .replace(/<span class="token keyword">/g, '<span class="text-purple-400">')
-            // Properties
             .replace(/<span class="token property">/g, '<span class="text-teal-300">')
-            // Comments
             .replace(/<span class="token comment">/g, '<span class="text-gray-500">')
-            // Operators
             .replace(/<span class="token operator">/g, '<span class="text-yellow-300">');
     };
 
-    const formatAndHighlight = useMemo(() => {
-        if (!code) return '';
+    useEffect(() => {
+        if (!code) {
+            setFormattedCode('');
+            return;
+        }
+
         const language = detectLanguage(code);
         try {
             let formatted = code;
@@ -70,7 +67,7 @@ const CodePrettier = ({ code }) => {
                     formatted = JSON.stringify(parsed, null, 2);
                     break;
                 case 'markup':
-                    if (window.html_beautify) {
+                    if (isBeautifierLoaded && window.html_beautify) {
                         formatted = window.html_beautify(code, {
                             indent_size: 2,
                             wrap_line_length: 80,
@@ -94,25 +91,24 @@ const CodePrettier = ({ code }) => {
                                   .trim();
             }
 
-            // Apply syntax highlighting and custom styling
             const highlighted = Prism.highlight(
                 formatted,
                 Prism.languages[language],
                 language
             );
 
-            return applyCustomStyling(highlighted);
+            setFormattedCode(applyCustomStyling(highlighted));
         } catch (error) {
             console.error('Error formatting code:', error);
-            return code;
+            setFormattedCode(code);
         }
-    }, [code]);
+    }, [code, isBeautifierLoaded]);
 
     return (
         <div>
             <pre className="p-4 text-sm font-mono">
                 <code 
-                    dangerouslySetInnerHTML={{ __html: formatAndHighlight }}
+                    dangerouslySetInnerHTML={{ __html: formattedCode }}
                     className={`language-${detectLanguage(code)} leading-6`}
                 />
             </pre>
