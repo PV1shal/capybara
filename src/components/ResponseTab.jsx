@@ -1,3 +1,4 @@
+import CodePrettier from "./codeformatter";
 import PreviewInjectFrameComponent from "./PreviewInjectFrameComponent";
 import { Badge } from "./ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
@@ -72,8 +73,17 @@ const ResponseTab = ({ responseData }) => {
                                 <TabsTrigger value="preview">Preview</TabsTrigger>
                                 <TabsTrigger value="visualize">Visualize</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="pretty" className="flex-grow overflow-auto">
-                                Pretty goes here
+                            <TabsContent value="pretty" className="w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100
+                                [&::-webkit-scrollbar]:w-2
+                                [&::-webkit-scrollbar-track]:bg-transparent
+                                [&::-webkit-scrollbar-thumb]:bg-gray-500/50
+                                [&::-webkit-scrollbar-thumb]:rounded-full
+                                [&::-webkit-scrollbar-thumb]:border-2
+                                [&::-webkit-scrollbar-thumb]:border-solid
+                                [&::-webkit-scrollbar-thumb]:border-transparent
+                                [&::-webkit-scrollbar-thumb]:bg-clip-padding
+                                hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70">
+                                <CodePrettier code={responseData.body} />
                             </TabsContent>
                             <TabsContent value="raw" className="w-full flex-grow overflow-auto 
                                 [&::-webkit-scrollbar]:w-2

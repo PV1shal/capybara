@@ -167,7 +167,7 @@ const RequestPanel = () => {
                 placeholder="Enter URL"
               />
             </div>
-            <Button className="bg-primary_button" onClick={handleSend}>
+            <Button className="bg-primary_button mr-3 hover:bg-[#0a474f]" onClick={handleSend}>
               SEND
             </Button>
           </div>
