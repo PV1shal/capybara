@@ -15,6 +15,7 @@ import {
 const ResponseTab = ({ responseData }) => {
     const selectedStyle =
         "rounded-none opacity-30 data-[state=active]:bg-transparent data-[state=active]:opacity-100 data-[state=active]:text-primary_text";
+    const scrollBarStyle = "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-500/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-clip-padding hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70";
 
     const responseBadge = (statusCode) => {
         if (statusCode === 200) {
@@ -58,10 +59,12 @@ const ResponseTab = ({ responseData }) => {
                                     Headers
                                 </TabsTrigger>
                             </div>
-                            <div className="flex text-sm items-center space-x-4">
+                            <div className="flex text-sm items-center space-x-4 mr-3">
                                 {responseBadge(responseData.status)}
                                 <Separator orientation="vertical" />
                                 <div className="opacity-70">{calculateSize(responseData.body)}</div>
+                                <Separator orientation="vertical" />
+                                <div>{responseData.responseTime}</div>
                             </div>
                         </div>
                     </TabsList>
@@ -72,28 +75,10 @@ const ResponseTab = ({ responseData }) => {
                                 <TabsTrigger value="raw">Raw</TabsTrigger>
                                 <TabsTrigger value="preview">Preview</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="pretty" className="w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100
-                                [&::-webkit-scrollbar]:w-2
-                                [&::-webkit-scrollbar-track]:bg-transparent
-                                [&::-webkit-scrollbar-thumb]:bg-gray-500/50
-                                [&::-webkit-scrollbar-thumb]:rounded-full
-                                [&::-webkit-scrollbar-thumb]:border-2
-                                [&::-webkit-scrollbar-thumb]:border-solid
-                                [&::-webkit-scrollbar-thumb]:border-transparent
-                                [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                                hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70">
+                            <TabsContent value="pretty" className={`w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100 ${scrollBarStyle}`}>
                                 <CodePrettier code={responseData.body} />
                             </TabsContent>
-                            <TabsContent value="raw" className="w-full flex-grow overflow-auto 
-                                [&::-webkit-scrollbar]:w-2
-                                [&::-webkit-scrollbar-track]:bg-transparent
-                                [&::-webkit-scrollbar-thumb]:bg-gray-500/50
-                                [&::-webkit-scrollbar-thumb]:rounded-full
-                                [&::-webkit-scrollbar-thumb]:border-2
-                                [&::-webkit-scrollbar-thumb]:border-solid
-                                [&::-webkit-scrollbar-thumb]:border-transparent
-                                [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                                hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70">
+                            <TabsContent value="raw" className={`w-full flex-grow overflow-auto ${scrollBarStyle}`}>
                                 <pre className="font-mono whitespace-pre-wrap p-4">
                                     {responseData.body}
                                 </pre>
@@ -105,15 +90,7 @@ const ResponseTab = ({ responseData }) => {
                     </TabsContent>
                     <TabsContent value="headers" className="flex-grow overflow-hidden">
                         <div className="h-full overflow-auto 
-                            [&::-webkit-scrollbar]:w-2
-                            [&::-webkit-scrollbar-track]:bg-transparent
-                            [&::-webkit-scrollbar-thumb]:bg-gray-500/50
-                            [&::-webkit-scrollbar-thumb]:rounded-full
-                            [&::-webkit-scrollbar-thumb]:border-2
-                            [&::-webkit-scrollbar-thumb]:border-solid
-                            [&::-webkit-scrollbar-thumb]:border-transparent
-                            [&::-webkit-scrollbar-thumb]:bg-clip-padding
-                            hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70">
+                            ">
                             <Table>
                                 <TableHeader className="sticky top-0 bg-primary_bg z-10">
                                     <TableRow>

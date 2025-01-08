@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, time::{Duration, Instant}};
 use serde_json::{json, Value};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -17,6 +17,7 @@ async fn send_request(method_type: String, url: String, params_data: String, hea
         }
     };
 
+    let now: Instant = Instant::now();
     let res = match client.get(&url).send().await {
         Ok(response) => response,
         Err(e) => {
@@ -25,18 +26,22 @@ async fn send_request(method_type: String, url: String, params_data: String, hea
         }
     };
 
+    let elapsed_time: Duration = now.elapsed();
+
     let status = res.status().as_u16();
     let url = res.url().to_string();
     let version = format!("{:?}", res.version());
     let headers: HashMap<String, String> = res.headers().iter().map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string())).collect();
     let body = res.text().await.map_err(|e| format!("Failed to reade response body: {}", e))?;
+    let response_time: String = format!("{:?}", elapsed_time);
 
     let result_json: Value = json!({
         "status": status,
         "headers": headers,
         "body": body,
         "url": url,
-        "version": version
+        "version": version,
+        "responseTime": response_time
     });
 
     Ok(result_json)

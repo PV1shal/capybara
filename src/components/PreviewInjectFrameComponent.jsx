@@ -1,10 +1,10 @@
 const PreviewInjectFrameComponent = ({ body }) => {
   const customScrollbarCSS = `
     ::-webkit-scrollbar {
-        width: 8px;
+        width: 10px;
     }
     ::-webkit-scrollbar-track {
-        background: transparent;
+        background: black;
     }
     ::-webkit-scrollbar-thumb {
         background-color: rgba(107, 114, 128, 0.5);
