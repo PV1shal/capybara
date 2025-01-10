@@ -89,8 +89,7 @@ const ResponseTab = ({ responseData }) => {
                         </Tabs>
                     </TabsContent>
                     <TabsContent value="headers" className="flex-grow overflow-hidden">
-                        <div className="h-full overflow-auto 
-                            ">
+                        <div className={`h-full overflow-auto ${scrollBarStyle}`}>
                             <Table>
                                 <TableHeader className="sticky top-0 bg-primary_bg z-10">
                                     <TableRow>
