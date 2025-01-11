@@ -1,5 +1,6 @@
 use std::{collections::HashMap, time::{Duration, Instant}};
 use serde_json::{json, Value};
+use tauri::http::{HeaderMap, HeaderName, HeaderValue};
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -8,7 +9,7 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn send_request(method_type: String, url: String, params_data: String, headers_data: String, body_data: String) -> Result<Value, String> {
+async fn send_request(method_type: &str, url: &str, params_data: &str, headers_data: &str, body_data: &str) -> Result<Value, String> {
     let client = match reqwest::Client::builder().build() {
         Ok(client) => client,
         Err(error) => {
@@ -16,13 +17,34 @@ async fn send_request(method_type: String, url: String, params_data: String, hea
             return Err(format!("Something went wrong: {}", error));
         }
     };
-
     let now: Instant = Instant::now();
-    let res = match client.get(&url).send().await {
+    let headers: HashMap<String, String> = serde_json::from_str(headers_data).map_err(|e| format!("Failed to parse headers: {}", e)).unwrap();
+    let mut header_map = HeaderMap::new();
+
+    for (key, value) in headers {
+        header_map.insert(
+            HeaderName::from_bytes(key.as_bytes()).map_err(|e| format!("Invalid header name: {}", e)).unwrap(), 
+            HeaderValue::from_bytes(value.as_bytes()).map_err(|e| format!("Invalid value type: {}", e)).unwrap()
+        );
+    }
+    
+    let req = match method_type.to_lowercase().as_str() {
+        "get" => client.get(url),
+        "post" => client.post(url),
+        "put" => client.put(url),
+        "patch" => client.patch(url),
+        "delete" => client.delete(url),
+        "head" => client.head(url),
+        _ => return Err(format!("Unsupported HTTP method: {}", method_type)),
+    };
+
+    let req = req.headers(header_map);
+
+    let res = match req.send().await {
         Ok(response) => response,
         Err(e) => {
             println!("Request error: {}", e);
-            return Err(format!("Request error: {}", e))
+            return Err(format!("Request error: {}", e));
         }
     };
 
