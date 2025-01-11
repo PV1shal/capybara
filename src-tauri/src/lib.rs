@@ -39,6 +39,11 @@ async fn send_request(method_type: &str, url: &str, params_data: &str, headers_d
     };
 
     let req = req.headers(header_map);
+    let req = if ["post", "put", "patch"].contains(&method_type.to_lowercase().as_str()) {
+        req.body(body_data.to_string())
+    } else {
+        req
+    };
 
     let res = match req.send().await {
         Ok(response) => response,
