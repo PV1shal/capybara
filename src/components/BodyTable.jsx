@@ -1,6 +1,7 @@
 import { useState } from "react";
 import RequestInputTable from "./RequestInputTable";
 import { cn } from "@/lib/utils";
+import CodeEditor from "./RawTextArea";
 
 const BodyTable = ({ rowsData, setRowsData }) => {
   const [bodyType, setBodyType] = useState("none");
@@ -23,7 +24,7 @@ const BodyTable = ({ rowsData, setRowsData }) => {
   };
 
   return (
-    <div className="space-y-4 m-5">
+    <div className="space-y-4 m-5 h-full">
       <div className="flex space-x-2">
         <button
           onClick={() => setBodyType("none")}
@@ -53,7 +54,7 @@ const BodyTable = ({ rowsData, setRowsData }) => {
           raw
         </button>
       </div>
-      {bodyType !== "none" && (
+      {bodyType === "form-data" && (
         <RequestInputTable
           rowsData={rowsData}
           addRow={addRow}
@@ -65,6 +66,9 @@ const BodyTable = ({ rowsData, setRowsData }) => {
         <div className="w-full flex flex-col text-sm opacity-45 justify-center items-center">
           Request doesn't have/need body.
         </div>
+      }
+      {bodyType === "raw" &&
+          <CodeEditor />
       }
     </div>
   );

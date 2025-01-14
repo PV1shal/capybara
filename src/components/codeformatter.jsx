@@ -1,22 +1,9 @@
-import { useEffect, useState } from 'react';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-markup';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-css';
+import React, { useEffect, useState } from 'react';
+import Editor from '@monaco-editor/react';
 
 const CodePrettier = ({ code }) => {
+    const [language, setLanguage] = useState('javascript');
     const [formattedCode, setFormattedCode] = useState('');
-    const [isBeautifierLoaded, setIsBeautifierLoaded] = useState(false);
-
-    useEffect(() => {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.14.9/beautify-html.min.js';
-        script.async = true;
-        script.onload = () => setIsBeautifierLoaded(true);
-        document.body.appendChild(script);
-        return () => document.body.removeChild(script);
-    }, []);
 
     const detectLanguage = (content) => {
         try {
@@ -24,32 +11,71 @@ const CodePrettier = ({ code }) => {
             return 'json';
         } catch {}
 
-        if (content.trim().startsWith('<') && content.trim().endsWith('>')) {
-            return 'markup';
+        if (content?.trim().startsWith('<') && content?.trim().endsWith('>')) {
+            return 'html';
         }
 
-        if (content.includes('{') && content.includes('}') && 
-            (content.includes(':') || content.includes('@media'))) {
+        if (content?.includes('{') && content?.includes('}') && 
+            (content?.includes(':') || content?.includes('@media'))) {
             return 'css';
         }
 
         return 'javascript';
     };
 
-    const applyCustomStyling = (html) => {
-        if (!html) return '';
+    const formatJSON = (jsonString) => {
+        try {
+            const parsed = JSON.parse(jsonString);
+            return JSON.stringify(parsed, null, 2);
+        } catch (error) {
+            console.error('Error parsing JSON:', error);
+            return jsonString;
+        }
+    };
 
-        return html
-            .replace(/<span class="token tag">/g, '<span class="text-blue-400">')
-            .replace(/<span class="token punctuation">/g, '<span class="text-gray-400">')
-            .replace(/<span class="token attr-name">/g, '<span class="text-sky-300">')
-            .replace(/<span class="token attr-value">/g, '<span class="text-orange-300">')
-            .replace(/<span class="token string">/g, '<span class="text-orange-300">')
-            .replace(/<span class="token number">/g, '<span class="text-purple-300">')
-            .replace(/<span class="token keyword">/g, '<span class="text-purple-400">')
-            .replace(/<span class="token property">/g, '<span class="text-teal-300">')
-            .replace(/<span class="token comment">/g, '<span class="text-gray-500">')
-            .replace(/<span class="token operator">/g, '<span class="text-yellow-300">');
+    const formatHTML = (htmlString) => {
+        let formatted = htmlString.replace(/>\s*</g, '>\n<');
+        formatted = formatted.replace(/(<.*?>)/g, (match) => {
+            return match.replace(/\s+/g, ' ');
+        });
+        let indentLevel = 0;
+        let result = '';
+        formatted.split('\n').forEach(line => {
+            line = line.trim();
+            if (line.match(/<\/.*?>/)) {
+                indentLevel--;
+            }
+            result += '  '.repeat(indentLevel) + line + '\n';
+            if (line.match(/<.*?>/) && !line.match(/<\/.*>/) && !line.match(/\/>/)) {
+                indentLevel++;
+            }
+        });
+        return result.trim();
+    };
+
+    const formatCSS = (cssString) => {
+        return cssString
+            .replace(/\s*{\s*/g, ' {\n  ')
+            .replace(/;\s*/g, ';\n  ')
+            .replace(/\s*}\s*/g, '\n}\n')
+            .replace(/\n\s*\n/g, '\n')
+            .replace(/\s*:\s*/g, ': ')
+            .replace(/\s*,\s*/g, ', ')
+            .trim();
+    };
+
+    const formatJavaScript = (jsString) => {
+        // This is a basic formatter. For more complex formatting,
+        // consider using a library like prettier
+        return jsString
+            .replace(/{\s*/g, '{\n  ')
+            .replace(/;\s*/g, ';\n  ')
+            .replace(/}\s*/g, '\n}\n')
+            .replace(/\s*,\s*/g, ', ')
+            .replace(/\s*=\s*/g, ' = ')
+            .replace(/\s*:\s*/g, ': ')
+            .replace(/\n\s*\n/g, '\n')
+            .trim();
     };
 
     useEffect(() => {
@@ -58,60 +84,57 @@ const CodePrettier = ({ code }) => {
             return;
         }
 
-        const language = detectLanguage(code);
+        const detectedLanguage = detectLanguage(code);
+        setLanguage(detectedLanguage);
+
+        let formatted;
         try {
-            let formatted = code;
-            switch (language) {
+            switch (detectedLanguage) {
                 case 'json':
-                    const parsed = JSON.parse(code);
-                    formatted = JSON.stringify(parsed, null, 2);
+                    formatted = formatJSON(code);
                     break;
-                case 'markup':
-                    if (isBeautifierLoaded && window.html_beautify) {
-                        formatted = window.html_beautify(code, {
-                            indent_size: 2,
-                            wrap_line_length: 80,
-                            preserve_newlines: true,
-                            max_preserve_newlines: 2
-                        });
-                    }
+                case 'html':
+                    formatted = formatHTML(code);
                     break;
                 case 'css':
-                    formatted = code.replace(/\{/g, ' {\n  ')
-                                  .replace(/;/g, ';\n  ')
-                                  .replace(/}/g, '\n}\n')
-                                  .replace(/\s+/g, ' ')
-                                  .trim();
+                    formatted = formatCSS(code);
+                    break;
+                case 'javascript':
+                    formatted = formatJavaScript(code);
                     break;
                 default:
-                    formatted = code.replace(/\{/g, ' {\n  ')
-                                  .replace(/;/g, ';\n  ')
-                                  .replace(/}/g, '\n}\n')
-                                  .replace(/\s+/g, ' ')
-                                  .trim();
+                    formatted = code;
             }
-
-            const highlighted = Prism.highlight(
-                formatted,
-                Prism.languages[language],
-                language
-            );
-
-            setFormattedCode(applyCustomStyling(highlighted));
         } catch (error) {
             console.error('Error formatting code:', error);
-            setFormattedCode(code);
+            formatted = code;
         }
-    }, [code, isBeautifierLoaded]);
+
+        setFormattedCode(formatted);
+    }, [code]);
 
     return (
-        <div>
-            <pre className="p-4 text-sm font-mono">
-                <code 
-                    dangerouslySetInnerHTML={{ __html: formattedCode }}
-                    className={`language-${detectLanguage(code)} leading-6`}
-                />
-            </pre>
+        <div className="w-full h-full text-sm">
+            <Editor
+                height="100%"
+                language={language}
+                value={formattedCode}
+                theme="vs-dark"
+                options={{
+                    readOnly: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    lineNumbers: 'on',
+                    renderWhitespace: 'selection',
+                    tabSize: 2,
+                    wordWrap: 'on',
+                    automaticLayout: true,
+                    fontSize: 14,
+                    fontFamily: 'monospace',
+                    formatOnPaste: true,
+                    formatOnType: true
+                }}
+            />
         </div>
     );
 };

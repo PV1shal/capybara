@@ -200,7 +200,7 @@ const RequestPanel = () => {
               <ParamsTable rowsData={headersData} setRowsData={setHeadersData} />
             </TabsContent>
 
-            <TabsContent value="body" className="mt-4">
+            <TabsContent value="body" className="mt-4 h-screen">
               <BodyTable rowsData={bodyData} setRowsData={setBodyData} />
             </TabsContent>
           </Tabs>
