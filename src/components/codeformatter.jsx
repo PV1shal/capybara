@@ -1,23 +1,88 @@
 import React, { useEffect, useState } from 'react';
 import Editor from '@monaco-editor/react';
 
-const CodePrettier = ({ code }) => {
+const CodePrettier = ({ code, fileName }) => {
     const [language, setLanguage] = useState('javascript');
     const [formattedCode, setFormattedCode] = useState('');
 
-    const detectLanguage = (content) => {
+    const getLanguageFromExtension = (fileName) => {
+        if (!fileName) return null;
+        
+        const extension = fileName.toLowerCase().split('.').pop();
+        const extensionMap = {
+            // JavaScript
+            'js': 'javascript',
+            'jsx': 'javascript',
+            'ts': 'typescript',
+            'tsx': 'typescript',
+            // HTML
+            'html': 'html',
+            'htm': 'html',
+            'svg': 'html',
+            // CSS
+            'css': 'css',
+            'scss': 'scss',
+            'sass': 'scss',
+            'less': 'less',
+            // JSON
+            'json': 'json',
+            // Other common types
+            'md': 'markdown',
+            'py': 'python',
+            'rb': 'ruby',
+            'php': 'php',
+            'java': 'java',
+            'cpp': 'cpp',
+            'c': 'c',
+            'cs': 'csharp',
+            'go': 'go',
+            'rs': 'rust',
+            'swift': 'swift',
+            'kt': 'kotlin',
+            'sql': 'sql',
+            'yaml': 'yaml',
+            'yml': 'yaml',
+            'xml': 'xml',
+        };
+        
+        return extensionMap[extension] || null;
+    };
+
+    const detectLanguage = (content, fileName) => {
+        const fileExtensionLanguage = getLanguageFromExtension(fileName);
+        if (fileExtensionLanguage) {
+            return fileExtensionLanguage;
+        }
+
         try {
             JSON.parse(content);
             return 'json';
         } catch {}
 
         if (content?.trim().startsWith('<') && content?.trim().endsWith('>')) {
+            // Check for SVG specifically
+            if (content.toLowerCase().includes('<svg')) {
+                return 'html';
+            }
             return 'html';
         }
 
         if (content?.includes('{') && content?.includes('}') && 
             (content?.includes(':') || content?.includes('@media'))) {
-            return 'css';
+            if (content.includes('@media') || content.includes('@keyframes') || 
+                !content.includes('function') && !content.includes('const ')) {
+                return 'css';
+            }
+        }
+
+        if (content?.includes('def ') || content?.includes('import ') && 
+            content?.includes(':') && !content?.includes('{')) {
+            return 'python';
+        }
+
+        if (content?.includes('def ') && content?.includes('end') && 
+            !content?.includes('{')) {
+            return 'ruby';
         }
 
         return 'javascript';
@@ -45,7 +110,7 @@ const CodePrettier = ({ code }) => {
             if (line.match(/<\/.*?>/)) {
                 indentLevel--;
             }
-            result += '  '.repeat(indentLevel) + line + '\n';
+            result += '  '.repeat(Math.max(0, indentLevel)) + line + '\n';
             if (line.match(/<.*?>/) && !line.match(/<\/.*>/) && !line.match(/\/>/)) {
                 indentLevel++;
             }
@@ -64,18 +129,22 @@ const CodePrettier = ({ code }) => {
             .trim();
     };
 
-    const formatJavaScript = (jsString) => {
-        // This is a basic formatter. For more complex formatting,
-        // consider using a library like prettier
-        return jsString
-            .replace(/{\s*/g, '{\n  ')
-            .replace(/;\s*/g, ';\n  ')
-            .replace(/}\s*/g, '\n}\n')
-            .replace(/\s*,\s*/g, ', ')
-            .replace(/\s*=\s*/g, ' = ')
-            .replace(/\s*:\s*/g, ': ')
-            .replace(/\n\s*\n/g, '\n')
-            .trim();
+    const formatCode = (codeString, lang) => {
+        switch (lang) {
+            case 'json':
+                return formatJSON(codeString);
+            case 'html':
+                return formatHTML(codeString);
+            case 'css':
+            case 'scss':
+            case 'less':
+                return formatCSS(codeString);
+            default:
+                return codeString
+                    .split('\n')
+                    .map(line => line.trim())
+                    .join('\n');
+        }
     };
 
     useEffect(() => {
@@ -84,34 +153,17 @@ const CodePrettier = ({ code }) => {
             return;
         }
 
-        const detectedLanguage = detectLanguage(code);
+        const detectedLanguage = detectLanguage(code, fileName);
         setLanguage(detectedLanguage);
 
-        let formatted;
         try {
-            switch (detectedLanguage) {
-                case 'json':
-                    formatted = formatJSON(code);
-                    break;
-                case 'html':
-                    formatted = formatHTML(code);
-                    break;
-                case 'css':
-                    formatted = formatCSS(code);
-                    break;
-                case 'javascript':
-                    formatted = formatJavaScript(code);
-                    break;
-                default:
-                    formatted = code;
-            }
+            const formatted = formatCode(code, detectedLanguage);
+            setFormattedCode(formatted);
         } catch (error) {
             console.error('Error formatting code:', error);
-            formatted = code;
+            setFormattedCode(code);
         }
-
-        setFormattedCode(formatted);
-    }, [code]);
+    }, [code, fileName]);
 
     return (
         <div className="w-full h-full text-sm">
