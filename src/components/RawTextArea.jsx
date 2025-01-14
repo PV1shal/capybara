@@ -5,22 +5,31 @@ const CodeEditor = () => {
     const [language, setLanguage] = useState('javascript');
 
     const detectLanguage = (content) => {
+        if (!content) return 'javascript';
+        const trimmedContent = content.trim();
+        
         try {
-            JSON.parse(content);
+            JSON.parse(trimmedContent);
             return 'json';
         } catch {}
+        
+        if (trimmedContent.startsWith('<?xml') || 
+            (trimmedContent.startsWith('<') && trimmedContent.endsWith('>') && trimmedContent.includes('</') && !trimmedContent.includes('<html'))) {
+            return 'xml';
+        }
 
-        if (content?.trim().startsWith('<') && content?.trim().endsWith('>')) {
+        if (trimmedContent.startsWith('<') && trimmedContent.endsWith('>') && 
+            (trimmedContent.includes('<html') || trimmedContent.includes('<!DOCTYPE html'))) {
             return 'html';
         }
 
-        if (content?.includes('{') && content?.includes('}') && 
-            (content?.includes(':') || content?.includes('@media'))) {
+        if (trimmedContent.includes('{') && trimmedContent.includes('}') && 
+            (trimmedContent.includes(':') || trimmedContent.includes('@media'))) {
             return 'css';
         }
-
         return 'javascript';
     };
+    
 
     const handleChange = (value) => {
         const detectedLanguage = detectLanguage(value);
@@ -51,7 +60,6 @@ const CodeEditor = () => {
                     wordWrap: 'on',
                     formatOnPaste: true,
                     formatOnType: true,
-                    automaticLayout: true
                 }}
             />
         </div>
