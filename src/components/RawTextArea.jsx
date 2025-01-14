@@ -39,7 +39,7 @@ const CodeEditor = () => {
     };
 
     return (
-        <div className="w-full h-full text-sm justify-center items-center">
+        <div className="h-full">
             <Editor
                 height="100%"
                 defaultLanguage="javascript"
