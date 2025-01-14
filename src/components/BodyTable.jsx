@@ -24,8 +24,8 @@ const BodyTable = ({ rowsData, setRowsData }) => {
   };
 
   return (
-    <div className="space-y-4 m-5 h-full">
-      <div className="flex space-x-2">
+    <div className="flex flex-col h-full">
+      <div className="flex space-x-2 mb-2">
         <button
           onClick={() => setBodyType("none")}
           className={cn(
@@ -54,7 +54,7 @@ const BodyTable = ({ rowsData, setRowsData }) => {
           raw
         </button>
       </div>
-      <div className="h-full">
+      <div className="flex-grow overflow-auto">
         {bodyType === "form-data" && (
           <RequestInputTable
             rowsData={rowsData}

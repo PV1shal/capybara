@@ -208,7 +208,7 @@ const RequestPanel = () => {
                 />
               </TabsContent>
 
-              <TabsContent value="body" className="flex-grow overflow-auto w-full">
+              <TabsContent value="body" className="flex-grow overflow-hidden w-full">
                 <BodyTable rowsData={bodyData} setRowsData={setBodyData} />
               </TabsContent>
             </Tabs>
