@@ -15,7 +15,6 @@ import {
 const ResponseTab = ({ responseData }) => {
     const selectedStyle =
         "rounded-none opacity-30 data-[state=active]:bg-transparent data-[state=active]:opacity-100 data-[state=active]:text-primary_text";
-    const scrollBarStyle = "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-500/50 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-2 [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-clip-padding hover:[&::-webkit-scrollbar-thumb]:bg-gray-500/70";
 
     const responseBadge = (statusCode) => {
         if (statusCode === 200) {
@@ -75,10 +74,10 @@ const ResponseTab = ({ responseData }) => {
                                 <TabsTrigger value="raw">Raw</TabsTrigger>
                                 <TabsTrigger value="preview">Preview</TabsTrigger>
                             </TabsList>
-                            <TabsContent value="pretty" className={`w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100 ${scrollBarStyle}`}>
+                            <TabsContent value="pretty" className={`w-full h-full overflow-auto rounded-md bg-primary_bg text-gray-100`}>
                                 <CodePrettier code={responseData.body} />
                             </TabsContent>
-                            <TabsContent value="raw" className={`w-full flex-grow overflow-auto ${scrollBarStyle}`}>
+                            <TabsContent value="raw" className={`w-full flex-grow overflow-auto`}>
                                 <pre className="font-mono whitespace-pre-wrap p-4">
                                     {responseData.body}
                                 </pre>
@@ -89,7 +88,7 @@ const ResponseTab = ({ responseData }) => {
                         </Tabs>
                     </TabsContent>
                     <TabsContent value="headers" className="flex-grow overflow-hidden">
-                        <div className={`h-full overflow-auto ${scrollBarStyle}`}>
+                        <div className={`h-full overflow-auto`}>
                             <Table>
                                 <TableHeader className="sticky top-0 bg-primary_bg z-10">
                                     <TableRow>
