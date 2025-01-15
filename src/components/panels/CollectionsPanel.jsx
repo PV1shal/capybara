@@ -65,8 +65,7 @@ const CollectionsPanel = () => {
     <div className="flex flex-col">
       <div className="flex flex-row space-x-4 p-2">
         <NewCollectionModal 
-          newCollection={addNewCollection} 
-          deleteCollection={deleteCollection} 
+          newCollection={addNewCollection}
         />
         <FaFilter />
       </div>
@@ -75,9 +74,10 @@ const CollectionsPanel = () => {
           {Object.entries(collections).map(([collectionId, collection]) => (
             <AccordionItem key={collectionId} value={collectionId} className="border-0">
               <CollectionContextMenu 
-                collection={collection}
-                addRequestToCollection={addRequestToCollection}
-                onDelete={() => deleteCollection(collectionId)}
+                  collection={collection}
+                  collectionId={collectionId}
+                  addRequestToCollection={addRequestToCollection}
+                  deleteCollection={deleteCollection}
               />
               <AccordionContent className="pt-1">
                 <div className="flex flex-col space-y-1">

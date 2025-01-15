@@ -21,7 +21,8 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-const CollectionContextMenu = ({ collection, addRequestToCollection, deleteCollection }) => {
+const CollectionContextMenu = ({ collection, collectionId, addRequestToCollection, deleteCollection }) => {
+
     return (
         <ContextMenu>
             <ContextMenuTrigger>
@@ -35,7 +36,11 @@ const CollectionContextMenu = ({ collection, addRequestToCollection, deleteColle
                 <ContextMenuItem inset>
                     New Request
                 </ContextMenuItem>
-                <ContextMenuItem inset className="text-red-500">
+                <ContextMenuItem 
+                    inset 
+                    className="text-red-500"
+                    onClick={() => deleteCollection(collectionId)}
+                >
                     Delete Collection
                 </ContextMenuItem>
             </ContextMenuContent>
