@@ -12,7 +12,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useState } from "react";
 
-const NewRequestModal = ({ newCollection }) => {
+const NewCollectionModal = ({ newCollection }) => {
   const [open, setOpen] = useState(false);
   const [collectionName, setCollectionName] = useState("");
 
@@ -75,4 +75,4 @@ const NewRequestModal = ({ newCollection }) => {
   );
 };
 
-export default NewRequestModal;
+export default NewCollectionModal;

@@ -1,6 +1,6 @@
 import { FaFilter } from "react-icons/fa";
 import { useState } from "react";
-import NewRequestModal from "../NewRequestModal";
+import NewCollectionModal from "../NewCollectionModal";
 import {
   Accordion,
   AccordionContent,
@@ -64,7 +64,7 @@ const CollectionsPanel = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row space-x-4 p-2">
-        <NewRequestModal 
+        <NewCollectionModal 
           newCollection={addNewCollection} 
           deleteCollection={deleteCollection} 
         />
