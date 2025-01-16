@@ -1,5 +1,4 @@
 import { FaFilter } from "react-icons/fa";
-import { useState } from "react";
 import NewCollectionModal from "../NewCollectionModal";
 import {
   Accordion,
@@ -7,67 +6,19 @@ import {
   AccordionItem,
 } from "@/components/ui/accordion";
 import CollectionContextMenu from "../CollectionContextMenu";
-import { v4 as uuidv4 } from 'uuid';
 import { IoMdClose } from "react-icons/io";
+import { useCollections } from "@/contexts/CollectionContext";
 
 const CollectionsPanel = () => {
-  const [collections, setCollections] = useState({});
-  
-  const addNewCollection = (collectionName) => {
-    const collectionId = uuidv4();
-    setCollections(prev => ({
-      ...prev,
-      [collectionId]: {
-        collectionName: collectionName,
-        requests: {}
-      }
-    }));
-  };
 
-  const deleteCollection = (collectionId) => {
-    const newCollections = { ...collections };
-    delete newCollections[collectionId];
-    setCollections(newCollections);
-  };
-
-  const addRequestToCollection = (collectionId, requestName, requestType, url) => {
-    const requestId = uuidv4();
-    setCollections(prev => ({
-      ...prev,
-      [collectionId]: {
-        ...prev[collectionId],
-        requests: {
-          ...prev[collectionId].requests,
-          [requestId]: {
-            requestName: requestName,
-            requestType: requestType,
-            requestURL: url,
-            requestParams: {
-              0: { key: "", value: "", description: "", isIncluded: true }
-            },
-            requestHeaders: {
-              0: { key: "", value: "", description: "", isIncluded: true }
-            },
-            requestBody: {
-              requestBodyType: "none",
-              requestBodyFormData: {
-                0: { key: "", value: "", description: "", isIncluded: true }
-              },
-              requestBodyRaw: ""
-            }
-          }
-        }
-      }
-    }));
-  };
-
-  const deleteRequestFromCollection = (collectionId, requestId) => {
-    setCollections(prev => {
-      const updatedCollection = { ...prev };
-      delete updatedCollection[collectionId].requests[requestId];
-      return updatedCollection;
-    });
-  };
+  const { 
+    collections, 
+    addNewCollection, 
+    deleteCollection,
+    addRequestToCollection,
+    deleteRequestFromCollection,
+    selectRequest 
+  } = useCollections();
   
   return (
     <div className="flex flex-col">

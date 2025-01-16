@@ -31,7 +31,7 @@ const HTTP_METHODS = [
   { value: "OPTIONS", label: "OPTIONS", color: "#FF9BB3" },
 ];
 
-const RequestPanel = () => {
+const RequestPanel = ({ request }) => {
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(HTTP_METHODS[0].value);
   const [URL, setURL] = useState("");
