@@ -5,10 +5,10 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
 import CollectionContextMenu from "../CollectionContextMenu";
 import { v4 as uuidv4 } from 'uuid';
+import { IoMdClose } from "react-icons/io";
 
 const CollectionsPanel = () => {
   const [collections, setCollections] = useState({});
@@ -37,7 +37,7 @@ const CollectionsPanel = () => {
       [collectionId]: {
         ...prev[collectionId],
         requests: {
-          ...prev[collectionId].Requests,
+          ...prev[collectionId].requests,
           [requestId]: {
             requestName: requestName,
             requestType: requestType,
@@ -61,6 +61,14 @@ const CollectionsPanel = () => {
     }));
   };
 
+  const deleteRequestFromCollection = (collectionId, requestId) => {
+    setCollections(prev => {
+      const updatedCollection = { ...prev };
+      delete updatedCollection[collectionId].requests[requestId];
+      return updatedCollection;
+    });
+  };
+  
   return (
     <div className="flex flex-col">
       <div className="flex flex-row space-x-4 p-2">
@@ -84,10 +92,22 @@ const CollectionsPanel = () => {
                   {Object.entries(collection.requests).map(([requestId, request]) => (
                     <div 
                       key={requestId}
-                      className="flex items-center space-x-2 px-4 py-1 hover:bg-primary_select cursor-pointer"
+                      className="flex justify-between items-center space-x-2 px-4 py-1 hover:bg-primary_select cursor-pointer"
                     >
-                      <span className="text-[#FFB21C]">{request.requestType}</span>
-                      <span className="text-sm">{request.requestName}</span>
+                      <div className="space-x-2">
+                        <span className="text-[#FFB21C]">{request.requestType}</span>
+                        <span className="text-sm">{request.requestName}</span>
+                      </div>
+                      <div>
+                        <IoMdClose
+                          size={20}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteRequestFromCollection(collectionId, requestId);
+                          }}
+                          className="text-red-500 hover:text-red-400"
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
