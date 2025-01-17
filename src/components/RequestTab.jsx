@@ -1,10 +1,9 @@
 // components/RequestTab.jsx
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Slash } from "lucide-react";
 import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -133,10 +132,11 @@ const RequestTab = ({ request, collectionName }) => {
     <PanelGroup direction="vertical">
       <Panel>
         <div className="flex flex-col h-full">
-          <div className="m-3">
-            <b style={{ color: getCurrentColor() }}>{selectedMethod}</b>{" "}
-            { collectionName + " " + request.requestName}
-          </div>
+        <div className="flex items-center space-x-1 m-3 text-md font-bold hover:cursor-default">
+          <span className="text-gray-400 hover:text-primary_text transition">{collectionName}</span>
+          <Slash className="h-4 w-4 text-gray-400" />
+          <span className="text-primary_text">{request.requestName}</span>
+        </div>
           <div className="flex flex-row items-center">
             <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
               <Popover open={open} onOpenChange={setOpen}>
