@@ -4,12 +4,11 @@ import { v4 as uuidv4 } from 'uuid';
 const TabsContext = createContext();
 
 export const TabsProvider = ({ children }) => {
-  const [tabs, setTabs] = useState([]);
+  const [tabs, setTabs] = useState({});
   const [activeTabId, setActiveTabId] = useState(null);
 
   const openRequestInTab = (collectionId, requestId, request) => {
-    // Check if request is already open in a tab
-    const existingTab = tabs.find(
+    const existingTab = Object.values(tabs).find(
       tab => tab.collectionId === collectionId && tab.requestId === requestId
     );
 
@@ -18,21 +17,33 @@ export const TabsProvider = ({ children }) => {
       return;
     }
 
+    const newTabId = uuidv4();
     const newTab = {
-      id: uuidv4(),
+      id: newTabId,
       collectionId,
       requestId,
       request,
       type: 'request'
     };
-    setTabs(prev => [...prev, newTab]);
-    setActiveTabId(newTab.id);
+
+    setTabs(prev => ({
+      ...prev,
+      [newTabId]: newTab
+    }));
+    setActiveTabId(newTabId);
   };
 
   const closeTab = (tabId) => {
-    setTabs(prev => prev.filter(tab => tab.id !== tabId));
+    setTabs(prev => {
+      const newTabs = { ...prev };
+      delete newTabs[tabId];
+      return newTabs;
+    });
+
     if (activeTabId === tabId) {
-      setActiveTabId(tabs[tabs.length - 2]?.id || null);
+      const remainingTabIds = Object.keys(tabs);
+      const index = remainingTabIds.indexOf(tabId);
+      setActiveTabId(remainingTabIds[index - 1] || remainingTabIds[index + 1] || null);
     }
   };
 

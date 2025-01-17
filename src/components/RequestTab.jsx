@@ -1,18 +1,9 @@
 // components/RequestTab.jsx
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Check, ChevronsUpDown, Slash } from "lucide-react";
+import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -32,7 +23,7 @@ const HTTP_METHODS = [
   { value: "OPTIONS", label: "OPTIONS", color: "#FF9BB3" },
 ];
 
-const RequestTab = ({ request }) => {
+const RequestTab = ({ request, collectionName }) => {
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(request?.requestType || HTTP_METHODS[0].value);
   const [URL, setURL] = useState(request?.requestURL || "");
@@ -141,10 +132,11 @@ const RequestTab = ({ request }) => {
     <PanelGroup direction="vertical">
       <Panel>
         <div className="flex flex-col h-full">
-          <div>
-            <b style={{ color: getCurrentColor() }}>{selectedMethod}</b>{" "}
-            {request.requestName}
-          </div>
+        <div className="flex items-center space-x-1 m-3 text-md font-bold hover:cursor-default">
+          <span className="text-gray-400 hover:text-primary_text transition">{collectionName}</span>
+          <Slash className="h-4 w-4 text-gray-400" />
+          <span className="text-primary_text">{request.requestName}</span>
+        </div>
           <div className="flex flex-row items-center">
             <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
               <Popover open={open} onOpenChange={setOpen}>
@@ -207,7 +199,7 @@ const RequestTab = ({ request }) => {
           </div>
           <div className="flex-grow overflow-hidden">
             <Tabs defaultValue="params" className="w-full h-full flex flex-col">
-              <TabsList className="bg-transparent border-b border-primary_border">
+              <TabsList className="bg-transparent border-b border-primary_border flex justify-start">
                 <TabsTrigger
                   value="params"
                   className="data-[state=active]:text-primary_text data-[state=active]:bg-primary_select rounded-none"
