@@ -207,7 +207,7 @@ const RequestTab = ({ request }) => {
           </div>
           <div className="flex-grow overflow-hidden">
             <Tabs defaultValue="params" className="w-full h-full flex flex-col">
-              <TabsList className="bg-transparent border-b border-primary_border">
+              <TabsList className="bg-transparent border-b border-primary_border flex justify-start">
                 <TabsTrigger
                   value="params"
                   className="data-[state=active]:text-primary_text data-[state=active]:bg-primary_select rounded-none"
