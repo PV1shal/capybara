@@ -1,4 +1,3 @@
-// contexts/CollectionsContext.jsx
 import { createContext, useContext, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,8 +5,9 @@ const CollectionsContext = createContext();
 
 export const CollectionsProvider = ({ children }) => {
   const [collections, setCollections] = useState({});
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  
+  const [tabs, setTabs] = useState([]);
+  const [activeTabId, setActiveTabId] = useState(null);
+
   const addNewCollection = (collectionName) => {
     const collectionId = uuidv4();
     setCollections(prev => ({
@@ -62,25 +62,46 @@ export const CollectionsProvider = ({ children }) => {
       delete updatedCollection[collectionId].requests[requestId];
       return updatedCollection;
     });
+    
+    closeTab(requestId);
   };
 
-  const selectRequest = (collectionId, requestId) => {
-    setSelectedRequest({
-      collectionId,
-      requestId,
-      request: collections[collectionId].requests[requestId]
+  const openRequestInTab = (collectionId, requestId) => {
+    const request = collections[collectionId].requests[requestId];
+    if (!tabs.find(tab => tab.requestId === requestId)) {
+      const newTab = {
+        id: uuidv4(),
+        requestId,
+        collectionId,
+        request
+      };
+      setTabs(prev => [...prev, newTab]);
+    }
+    setActiveTabId(tabs.find(tab => tab.requestId === requestId)?.id || null);
+  };
+
+  const closeTab = (requestId) => {
+    setTabs(prev => {
+      const newTabs = prev.filter(tab => tab.requestId !== requestId);
+      if (newTabs.length > 0 && activeTabId === requestId) {
+        setActiveTabId(newTabs[newTabs.length - 1].id);
+      }
+      return newTabs;
     });
   };
 
   return (
     <CollectionsContext.Provider value={{
       collections,
-      selectedRequest,
+      tabs,
+      activeTabId,
       addNewCollection,
       deleteCollection,
       addRequestToCollection,
       deleteRequestFromCollection,
-      selectRequest
+      openRequestInTab,
+      closeTab,
+      setActiveTabId
     }}>
       {children}
     </CollectionsContext.Provider>

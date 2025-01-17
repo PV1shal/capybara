@@ -8,17 +8,18 @@ import {
 import CollectionContextMenu from "../CollectionContextMenu";
 import { IoMdClose } from "react-icons/io";
 import { useCollections } from "@/contexts/CollectionContext";
+import { useTabs } from "@/contexts/TabsProvider";
 
 const CollectionsPanel = () => {
-
   const { 
     collections, 
     addNewCollection, 
     deleteCollection,
     addRequestToCollection,
     deleteRequestFromCollection,
-    selectRequest 
   } = useCollections();
+
+  const { openRequestInTab } = useTabs();
   
   return (
     <div className="flex flex-col">
@@ -33,10 +34,10 @@ const CollectionsPanel = () => {
           {Object.entries(collections).map(([collectionId, collection]) => (
             <AccordionItem key={collectionId} value={collectionId} className="border-0">
               <CollectionContextMenu 
-                  collection={collection}
-                  collectionId={collectionId}
-                  addRequestToCollection={addRequestToCollection}
-                  deleteCollection={deleteCollection}
+                collection={collection}
+                collectionId={collectionId}
+                addRequestToCollection={addRequestToCollection}
+                deleteCollection={deleteCollection}
               />
               <AccordionContent className="pt-1">
                 <div className="flex flex-col space-y-1">
@@ -44,6 +45,7 @@ const CollectionsPanel = () => {
                     <div 
                       key={requestId}
                       className="flex justify-between items-center space-x-2 px-4 py-1 hover:bg-primary_select cursor-pointer"
+                      onClick={() => openRequestInTab(collectionId, requestId, request)}
                     >
                       <div className="space-x-2">
                         <span className="text-[#FFB21C]">{request.requestType}</span>

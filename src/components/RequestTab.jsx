@@ -1,3 +1,4 @@
+// components/RequestTab.jsx
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -31,21 +32,43 @@ const HTTP_METHODS = [
   { value: "OPTIONS", label: "OPTIONS", color: "#FF9BB3" },
 ];
 
-const RequestPanel = ({ request }) => {
+const RequestTab = ({ request }) => {
   const [open, setOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState(HTTP_METHODS[0].value);
-  const [URL, setURL] = useState("");
+  const [selectedMethod, setSelectedMethod] = useState(request?.requestType || HTTP_METHODS[0].value);
+  const [URL, setURL] = useState(request?.requestURL || "");
 
-  const [paramsData, setParamsData] = useState({
-    0: { key: "", value: "", description: "", isIncluded: true },
-  });
-  const [headersData, setHeadersData] = useState({
-    0: { key: "", value: "", description: "", isIncluded: true },
-  });
-  const [bodyData, setBodyData] = useState({
-    0: { key: "", value: "", description: "", isIncluded: true },
-  });
+  const [paramsData, setParamsData] = useState(
+    request?.requestParams || {
+      0: { key: "", value: "", description: "", isIncluded: true },
+    }
+  );
+  
+  const [headersData, setHeadersData] = useState(
+    request?.requestHeaders || {
+      0: { key: "", value: "", description: "", isIncluded: true },
+    }
+  );
+  
+  const [bodyData, setBodyData] = useState(
+    request?.requestBody?.requestBodyFormData || {
+      0: { key: "", value: "", description: "", isIncluded: true },
+    }
+  );
+  
+  const [bodyType, setBodyType] = useState(request?.requestBody?.requestBodyType || "none");
   const [httpResponse, setHttpResponse] = useState(null);
+
+  // Update state when request prop changes
+  useEffect(() => {
+    if (request) {
+      setSelectedMethod(request.requestType);
+      setURL(request.requestURL);
+      setParamsData(request.requestParams);
+      setHeadersData(request.requestHeaders);
+      setBodyData(request.requestBody.requestBodyFormData);
+      setBodyType(request.requestBody.requestBodyType);
+    }
+  }, [request]);
 
   const getFormattedData = () => {
     const validParams = Object.values(paramsData)
@@ -106,13 +129,21 @@ const RequestPanel = ({ request }) => {
     setURL(baseUrl);
   }, [paramsData]);
 
+  if (!request) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Select a request to view details
+      </div>
+    );
+  }
+
   return (
     <PanelGroup direction="vertical">
       <Panel>
         <div className="flex flex-col h-full">
           <div>
             <b style={{ color: getCurrentColor() }}>{selectedMethod}</b>{" "}
-            Collection 1 / API NAME
+            {request.requestName}
           </div>
           <div className="flex flex-row items-center">
             <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
@@ -175,7 +206,7 @@ const RequestPanel = ({ request }) => {
             </Button>
           </div>
           <div className="flex-grow overflow-hidden">
-            <Tabs defaultValue="params" className="w-full h-full flex flex-col items-start">
+            <Tabs defaultValue="params" className="w-full h-full flex flex-col">
               <TabsList className="bg-transparent border-b border-primary_border">
                 <TabsTrigger
                   value="params"
@@ -197,19 +228,24 @@ const RequestPanel = ({ request }) => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="params" className="flex-grow overflow-auto w-full">
+              <TabsContent value="params" className="flex-grow overflow-auto">
                 <ParamsTable rowsData={paramsData} setRowsData={setParamsData} />
               </TabsContent>
 
-              <TabsContent value="headers" className="flex-grow overflow-auto w-full">
+              <TabsContent value="headers" className="flex-grow overflow-auto">
                 <ParamsTable
                   rowsData={headersData}
                   setRowsData={setHeadersData}
                 />
               </TabsContent>
 
-              <TabsContent value="body" className="flex-grow overflow-hidden w-full">
-                <BodyTable rowsData={bodyData} setRowsData={setBodyData} />
+              <TabsContent value="body" className="flex-grow overflow-auto">
+                <BodyTable 
+                  rowsData={bodyData} 
+                  setRowsData={setBodyData}
+                  bodyType={bodyType}
+                  setBodyType={setBodyType}
+                />
               </TabsContent>
             </Tabs>
           </div>
@@ -223,4 +259,4 @@ const RequestPanel = ({ request }) => {
   );
 };
 
-export default RequestPanel;
+export default RequestTab;
