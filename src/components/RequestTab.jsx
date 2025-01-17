@@ -2,17 +2,9 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Command, CommandGroup, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { cn } from "@/lib/utils";
 import { Input } from "./ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -32,7 +24,7 @@ const HTTP_METHODS = [
   { value: "OPTIONS", label: "OPTIONS", color: "#FF9BB3" },
 ];
 
-const RequestTab = ({ request }) => {
+const RequestTab = ({ request, collectionName }) => {
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(request?.requestType || HTTP_METHODS[0].value);
   const [URL, setURL] = useState(request?.requestURL || "");
@@ -141,9 +133,9 @@ const RequestTab = ({ request }) => {
     <PanelGroup direction="vertical">
       <Panel>
         <div className="flex flex-col h-full">
-          <div>
+          <div className="m-3">
             <b style={{ color: getCurrentColor() }}>{selectedMethod}</b>{" "}
-            {request.requestName}
+            { collectionName + " " + request.requestName}
           </div>
           <div className="flex flex-row items-center">
             <div className="flex flex-row border-[2px] rounded-lg m-2 border-primary_border w-full">
