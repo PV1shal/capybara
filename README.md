@@ -34,6 +34,15 @@ Capybara is an efficient, open-source API testing tool built with Rust and React
 ![image](https://github.com/user-attachments/assets/f1ac4041-8c45-4f8e-a424-f1a373d508a0)
 ![image](https://github.com/user-attachments/assets/b4615dfa-c1e7-44f3-9848-14ae55905198)
 
+## Why Capybara?
+
+- **Performance**: Significantly lower memory footprint than other API testing tools
+- **Speed**: Built with Rust for optimal performance
+- **Open Source**: Free to use and modify
+- **Modern Stack**: Uses latest technologies (Rust, React, Tauri)
+- **Lightweight**: Only 10MB installation size
+- **No Electron**: Built with Tauri for better resource management
+
 ## Installation
 
 1. Download the latest release for your platform from the releases page
@@ -58,15 +67,6 @@ npm run tauri dev
 # Build for production
 npm run tauri build
 ```
-
-## Why Capybara?
-
-- **Performance**: Significantly lower memory footprint than other API testing tools
-- **Speed**: Built with Rust for optimal performance
-- **Open Source**: Free to use and modify
-- **Modern Stack**: Uses latest technologies (Rust, React, Tauri)
-- **Lightweight**: Only 10MB installation size
-- **No Electron**: Built with Tauri for better resource management
 
 ## Requirements
 
