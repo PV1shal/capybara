@@ -9,6 +9,7 @@ import CollectionContextMenu from "../CollectionContextMenu";
 import { IoMdClose } from "react-icons/io";
 import { useCollections } from "@/contexts/CollectionContext";
 import { useTabs } from "@/contexts/TabsProvider";
+import { Button } from "../ui/button";
 
 const CollectionsPanel = () => {
   const { 
@@ -16,7 +17,7 @@ const CollectionsPanel = () => {
     addNewCollection, 
     deleteCollection,
     addRequestToCollection,
-    deleteRequestFromCollection,
+    deleteRequestFromCollection
   } = useCollections();
 
   const { openRequestInTab } = useTabs();
