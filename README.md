@@ -24,12 +24,12 @@ Capybara is an efficient, open-source API testing tool built with Rust and React
 
 ## Comparison
 
-Local memory storage:
+**Local memory storage (Postman Vs Capybara):**
 
 ![image](https://github.com/user-attachments/assets/dc02a239-9c46-433e-b58b-c963768bdb4c)
 ![image](https://github.com/user-attachments/assets/7cae30a4-0e85-489e-89c4-535ae97a2e7e)
 
-Ram usage:
+**Ram usage (Postman Vs Capybara):**
 
 ![image](https://github.com/user-attachments/assets/f1ac4041-8c45-4f8e-a424-f1a373d508a0)
 ![image](https://github.com/user-attachments/assets/b4615dfa-c1e7-44f3-9848-14ae55905198)
@@ -84,8 +84,8 @@ MIT License - feel free to use and modify as needed.
 
 ## Roadmap
 
-- AI-powered test generation
-- Environment variables
-- Request chaining
-- WebSocket support
-- OAuth 2.0 authentication
+- [ ] AI-powered test generation
+- [ ] Environment variables
+- [ ] Request chaining
+- [ ] WebSocket support
+- [ ] OAuth 2.0 authentication
