@@ -1,5 +1,9 @@
 # Capybara - A Lightweight API Testing Tool
 
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/b4311f7c-dffa-411a-abe6-326e8c418f65" alt="Capybara Meme" width="300" height="350">
+</div>
+
 Capybara is an efficient, open-source API testing tool built with Rust and React using the Tauri framework. It provides a modern, resource-efficient alternative to traditional API testing tools.
 
 ## Features
