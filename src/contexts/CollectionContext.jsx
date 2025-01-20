@@ -40,6 +40,8 @@ export const CollectionsProvider = ({ children }) => {
       requests: {
         ...collections[collectionId].requests,
         [requestId]: {
+          collectionId,
+          requestId,
           requestName,
           requestType,
           requestURL: url,
@@ -90,6 +92,55 @@ export const CollectionsProvider = ({ children }) => {
     closeTab(requestId);
   };
 
+  const updateRequestInCollection = (collectionId, requestId, updatedRequest) => {
+    console.log(collectionId, requestId);
+    
+    if (!collections[collectionId] || !collections[collectionId].requests[requestId]) {
+        console.error("Collection or request not found");
+        return;
+    }
+
+    const updatedRequestData = {
+        requestName: updatedRequest.requestName,
+        requestType: updatedRequest.requestType,
+        requestURL: updatedRequest.requestURL,
+        requestParams: updatedRequest.requestParams || collections[collectionId].requests[requestId].requestParams,
+        requestHeaders: updatedRequest.requestHeaders || collections[collectionId].requests[requestId].requestHeaders,
+        requestBody: {
+            requestBodyType: updatedRequest.requestBody?.requestBodyType || "none",
+            requestBodyFormData: updatedRequest.requestBody?.requestBodyFormData || {},
+            requestBodyRaw: updatedRequest.requestBody?.requestBodyRaw || ""
+        }
+    };
+
+    const updatedCollection = {
+        ...collections[collectionId],
+        requests: {
+            ...collections[collectionId].requests,
+            [requestId]: updatedRequestData
+        }
+    };
+
+    setCollections(prev => ({
+        ...prev,
+        [collectionId]: updatedCollection
+    }));
+
+    setTabs(prev => prev.map(tab => 
+        tab.requestId === requestId 
+            ? { ...tab, request: updatedRequestData }
+            : tab
+    ));
+
+    console.log(updateRequestInCollection);
+
+    invoke("save_collection", {
+        collectionId,
+        collectionName: updatedCollection.collectionName,
+        collectionData: JSON.stringify(updatedCollection)
+    });
+  };
+
   const openRequestInTab = (collectionId, requestId) => {
     const request = collections[collectionId].requests[requestId];
     if (!tabs.find(tab => tab.requestId === requestId)) {
@@ -123,6 +174,7 @@ export const CollectionsProvider = ({ children }) => {
       deleteCollection,
       addRequestToCollection,
       deleteRequestFromCollection,
+      updateRequestInCollection,
       openRequestInTab,
       closeTab,
       setActiveTabId

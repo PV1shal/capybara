@@ -12,6 +12,7 @@ import BodyTable from "./BodyTable";
 import { invoke } from "@tauri-apps/api/core";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import ResponseTab from "./ResponseTab";
+import { useCollections } from "@/contexts/CollectionContext";
 
 const HTTP_METHODS = [
   { value: "GET", label: "GET", color: "#00FF9F" },
@@ -27,6 +28,7 @@ const RequestTab = ({ request, collectionName }) => {
   const [open, setOpen] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState(request?.requestType || HTTP_METHODS[0].value);
   const [URL, setURL] = useState(request?.requestURL || "");
+  const { updateRequestInCollection } = useCollections();
 
   const [paramsData, setParamsData] = useState(
     request?.requestParams || {
@@ -77,8 +79,29 @@ const RequestTab = ({ request, collectionName }) => {
     return { params: validParams, headers: validHeaders, body: validBody };
   };
 
+  const handleSave = () => {
+    const updatedRequest = {
+      requestName: request.requestName,
+      requestType: selectedMethod,
+      requestURL: URL,
+      requestParams: paramsData,
+      requestHeaders: headersData,
+      requestBody: {
+        requestBodyType: bodyType,
+        requestBodyFormData: bodyData,
+        requestBodyRaw: request.requestBody.requestBodyRaw
+      }
+    };
+
+    console.log("Request: ", request);
+    
+    
+    updateRequestInCollection(request.collectionId, request.requestId, updatedRequest);
+  };
+
   const handleSend = () => {
     const { params, headers, body } = getFormattedData();
+    handleSave();
 
     invoke("send_request", {
       methodType: selectedMethod,
