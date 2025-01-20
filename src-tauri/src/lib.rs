@@ -151,6 +151,59 @@ async fn save_collection(
     Ok(())
 }
 
+#[tauri::command]
+async fn get_collections ( app_handler: AppHandle ) -> Result<Value, String> {
+    let app_data_dir = match app_handler.path().app_data_dir() {
+        Ok(dir) => dir,
+        Err(e) => {
+            let err = format!("Failed to get app data directory: {}", e);
+            println!("{}", err);
+            return Err(err);
+        }
+    };
+    
+    if !app_data_dir.exists() {
+        if let Err(e) = fs::create_dir_all(&app_data_dir) {
+            let error = format!("Error creating app directory: {} {:?}", e, app_data_dir);
+            println!("{}", error);
+            return Err(error);
+        }
+    }
+    
+    let collections_dir: PathBuf = app_data_dir.join("collections");
+    if !collections_dir.exists() {
+        if let Err(e) = fs::create_dir_all(&collections_dir) {
+            let error = format!("Error creating collections directory: {} {:?}", e, collections_dir);
+            println!("{}", error);
+            return Err(error);
+        }
+    }
+
+    let files = fs::read_dir(&collections_dir).unwrap();
+    let mut collections = serde_json::Value::Array(Vec::new());
+    for file in files {
+        match file {
+            Ok(entry) => {
+                let file_content = fs::read(entry.path()).unwrap();
+                match serde_json::from_slice::<serde_json::Value>(&file_content) {
+                    Ok(json) => {
+                        collections.as_array_mut().unwrap().push(json);
+                    }
+                    Err(e) => {
+                        eprintln!("Error reading file: {}", e);
+                    }
+                }
+                println!("{:?}", file_content);
+            }
+            Err(e) => {
+                eprintln!("Error reading file: {}", e);
+            }
+        }
+    }
+
+    Ok(collections)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -159,7 +212,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             greet,
             send_request,
-            save_collection
+            save_collection,
+            get_collections
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

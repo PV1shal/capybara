@@ -170,6 +170,7 @@ export const CollectionsProvider = ({ children }) => {
       collections,
       tabs,
       activeTabId,
+      setCollections,
       addNewCollection,
       deleteCollection,
       addRequestToCollection,
