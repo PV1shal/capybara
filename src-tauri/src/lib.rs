@@ -1,6 +1,6 @@
 use serde_json::{json, Value};
 use tauri::{AppHandle, Manager};
-use std::{collections, fs};
+use std::fs;
 use std::path::PathBuf;
 use std::{
     collections::HashMap,
@@ -30,35 +30,84 @@ async fn send_request(
         }
     };
     let now: Instant = Instant::now();
+
+    let mut final_url = url.to_string();
+    let params: HashMap<String, String> = serde_json::from_str(params_data)
+        .map_err(|e| format!("Failed to parse params: {}", e))?;
+    
+    if !params.is_empty() && !url.contains('?') {
+        let params_string: String = params.iter()
+            .map(|(k, v)| format!("{}={}", 
+                urlencoding::encode(k), 
+                urlencoding::encode(v)))
+            .collect::<Vec<String>>()
+            .join("&");
+        
+        if !params_string.is_empty() {
+            final_url = format!("{}?{}", url, params_string);
+        }
+    }
+
     let headers: HashMap<String, String> = serde_json::from_str(headers_data)
-        .map_err(|e| format!("Failed to parse headers: {}", e))
-        .unwrap();
+        .map_err(|e| format!("Failed to parse headers: {}", e))?;
     let mut header_map = HeaderMap::new();
 
     for (key, value) in headers {
         header_map.insert(
             HeaderName::from_bytes(key.as_bytes())
-                .map_err(|e| format!("Invalid header name: {}", e))
-                .unwrap(),
+                .map_err(|e| format!("Invalid header name: {}", e))?,
             HeaderValue::from_bytes(value.as_bytes())
-                .map_err(|e| format!("Invalid value type: {}", e))
-                .unwrap(),
+                .map_err(|e| format!("Invalid value type: {}", e))?,
         );
     }
 
     let req = match method_type.to_lowercase().as_str() {
-        "get" => client.get(url),
-        "post" => client.post(url),
-        "put" => client.put(url),
-        "patch" => client.patch(url),
-        "delete" => client.delete(url),
-        "head" => client.head(url),
+        "get" => client.get(&final_url),
+        "post" => client.post(&final_url),
+        "put" => client.put(&final_url),
+        "patch" => client.patch(&final_url),
+        "delete" => client.delete(&final_url),
+        "head" => client.head(&final_url),
         _ => return Err(format!("Unsupported HTTP method: {}", method_type)),
     };
 
     let req = req.headers(header_map);
     let req = if ["post", "put", "patch"].contains(&method_type.to_lowercase().as_str()) {
-        req.body(body_data.to_string())
+        let body_value: Value = serde_json::from_str(body_data)
+            .map_err(|e| format!("Failed to parse body data: {}", e))?;
+        
+        match body_value.get("requestBodyType").and_then(Value::as_str) {
+            Some("form-data") => {
+                let form_data = body_value.get("requestBodyFormData")
+                    .ok_or_else(|| "Missing form data".to_string())?;
+                let mut form = reqwest::multipart::Form::new();
+                
+                if let Some(obj) = form_data.as_object() {
+                    for (_, value) in obj {
+                        if let (Some(key), Some(val)) = (
+                            value.get("key").and_then(Value::as_str),
+                            value.get("value").and_then(Value::as_str)
+                        ) {
+                            form = form.text(key.to_string(), val.to_string());
+                        }
+                    }
+                }
+                req.multipart(form)
+            },
+            Some("raw") => {
+                // Get the raw body content directly from requestBodyRaw
+                let raw_body = body_value.get("requestBodyRaw")
+                    .and_then(Value::as_str)
+                    .unwrap_or("{}");
+                
+                // Add Content-Type header for JSON
+                let req = req.header("Content-Type", "application/json");
+                
+                // Send the raw body as is
+                req.body(raw_body.to_string())
+            },
+            _ => req.body("{}".to_string()) // Default case
+        }
     } else {
         req
     };
@@ -73,27 +122,16 @@ async fn send_request(
 
     let elapsed_time: Duration = now.elapsed();
 
-    let status = res.status().as_u16();
-    let url = res.url().to_string();
-    let version = format!("{:?}", res.version());
-    let headers: HashMap<String, String> = res
-        .headers()
-        .iter()
-        .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
-        .collect();
-    let body = res
-        .text()
-        .await
-        .map_err(|e| format!("Failed to reade response body: {}", e))?;
-    let response_time: String = format!("{:?}", elapsed_time);
-
-    let result_json: Value = json!({
-        "status": status,
-        "headers": headers,
-        "body": body,
-        "url": url,
-        "version": version,
-        "responseTime": response_time
+    let result_json = json!({
+        "status": res.status().as_u16(),
+        "headers": res.headers().iter()
+            .map(|(k, v)| (k.to_string(), v.to_str().unwrap_or("").to_string()))
+            .collect::<HashMap<String, String>>(),
+        "url": res.url().to_string(),
+        "version": format!("{:?}", res.version()),
+        "body": res.text().await
+            .map_err(|e| format!("Failed to read response body: {}", e))?,
+        "responseTime": format!("{:?}", elapsed_time)
     });
 
     Ok(result_json)
@@ -139,7 +177,6 @@ async fn save_collection(
         }
     };
 
-    // Write some data to a file in the collections directory (replace with actual logic)
     let file_path = collections_dir.join(format!("{}_{}.json", collection_id, collection_name));
     if let Err(e) = fs::write(&file_path, serde_json::to_string_pretty(&parsed_data).unwrap()) {
         let error = format!("Error writing to file: {} {:?}", e, file_path);
@@ -193,7 +230,6 @@ async fn get_collections ( app_handler: AppHandle ) -> Result<Value, String> {
                         eprintln!("Error reading file: {}", e);
                     }
                 }
-                println!("{:?}", file_content);
             }
             Err(e) => {
                 eprintln!("Error reading file: {}", e);

@@ -42,7 +42,7 @@ const RequestTab = ({ request, collectionName }) => {
     }
   );
   
-  const [bodyData, setBodyData] = useState(
+  const [bodyFormData, setBodyFormData] = useState(
     request?.requestBody?.requestBodyFormData || {
       0: { key: "", value: "", description: "", isIncluded: true },
     }
@@ -50,6 +50,7 @@ const RequestTab = ({ request, collectionName }) => {
   
   const [bodyType, setBodyType] = useState(request?.requestBody?.requestBodyType || "none");
   const [httpResponse, setHttpResponse] = useState(null);
+  const [bodyRawData, setBodyRawData] = useState("");
 
   // Update state when request prop changes
   useEffect(() => {
@@ -58,7 +59,7 @@ const RequestTab = ({ request, collectionName }) => {
       setURL(request.requestURL);
       setParamsData(request.requestParams);
       setHeadersData(request.requestHeaders);
-      setBodyData(request.requestBody.requestBodyFormData);
+      setBodyFormData(request.requestBody.requestBodyFormData);
       setBodyType(request.requestBody.requestBodyType);
     }
   }, [request]);
@@ -72,43 +73,42 @@ const RequestTab = ({ request, collectionName }) => {
       .filter((row) => row.key && row.value && row.isIncluded)
       .reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
 
-    const validBody = Object.values(bodyData)
+    const validBody = Object.values(bodyFormData)
       .filter((row) => row.key && row.value && row.isIncluded)
       .reduce((acc, row) => ({ ...acc, [row.key]: row.value }), {});
 
     return { params: validParams, headers: validHeaders, body: validBody };
   };
 
-  const handleSave = () => {
+  const handleSave = (bodyData) => {
     const updatedRequest = {
       requestName: request.requestName,
       requestType: selectedMethod,
       requestURL: URL,
       requestParams: paramsData,
       requestHeaders: headersData,
-      requestBody: {
-        requestBodyType: bodyType,
-        requestBodyFormData: bodyData,
-        requestBodyRaw: request.requestBody.requestBodyRaw
-      }
+      bodyData: bodyData
     };
-
-    console.log("Request: ", request);
-    
-    
     updateRequestInCollection(request.collectionId, request.requestId, updatedRequest);
   };
 
   const handleSend = () => {
-    const { params, headers, body } = getFormattedData();
-    handleSave();
+    const { params, headers, formBody } = getFormattedData();
+
+    const bodyData = {
+      "requestBodyType": bodyType,
+      "requestBodyFormData": formBody,
+      "requestBodyRaw": bodyRawData
+    };
+
+    handleSave(bodyData);
 
     invoke("send_request", {
       methodType: selectedMethod,
       url: URL,
       paramsData: JSON.stringify(params),
       headersData: JSON.stringify(headers),
-      bodyData: JSON.stringify(body),
+      bodyData: JSON.stringify(bodyData),
     })
       .then((resp) => {
         setHttpResponse(resp);
@@ -256,10 +256,12 @@ const RequestTab = ({ request, collectionName }) => {
 
               <TabsContent value="body" className="flex-grow overflow-auto">
                 <BodyTable 
-                  rowsData={bodyData} 
-                  setRowsData={setBodyData}
+                  rowsData={bodyFormData} 
+                  setRowsData={setBodyFormData}
                   bodyType={bodyType}
                   setBodyType={setBodyType}
+                  bodyRawData={bodyRawData}
+                  setBodyRawData={setBodyRawData}
                 />
               </TabsContent>
             </Tabs>
