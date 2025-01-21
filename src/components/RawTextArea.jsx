@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
 
-const CodeEditor = () => {
+const CodeEditor = ({bodyRawData, setBodyRawData}) => {
     const [language, setLanguage] = useState('javascript');
+
+    console.log("Editor: ", bodyRawData);
+    
 
     const detectLanguage = (content) => {
         if (!content) return 'javascript';
@@ -36,6 +39,7 @@ const CodeEditor = () => {
         if (detectedLanguage !== language) {
             setLanguage(detectedLanguage);
         }
+        setBodyRawData(value);
     };
 
     return (
@@ -46,6 +50,7 @@ const CodeEditor = () => {
                 language={language}
                 theme="vs-dark"
                 onChange={handleChange}
+                value={bodyRawData}
                 options={{
                     autoIndent: true,
                     colorDecorators: true,

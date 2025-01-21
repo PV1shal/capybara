@@ -3,8 +3,7 @@ import RequestInputTable from "./RequestInputTable";
 import { cn } from "@/lib/utils";
 import CodeEditor from "./RawTextArea";
 
-const BodyTable = ({ rowsData, setRowsData }) => {
-  const [bodyType, setBodyType] = useState("none");
+const BodyTable = ({ rowsData, setRowsData, bodyType, setBodyType, bodyRawData, setBodyRawData }) => {
   const [nextId, setNextId] = useState(1);
 
   const addRow = () => {
@@ -68,7 +67,7 @@ const BodyTable = ({ rowsData, setRowsData }) => {
             Request doesn't have/need body.
           </div>
         )}
-        {bodyType === "raw" && <CodeEditor />}
+        {bodyType === "raw" && <CodeEditor bodyRawData={bodyRawData} setBodyRawData={setBodyRawData} />}
       </div>
     </div>
   );

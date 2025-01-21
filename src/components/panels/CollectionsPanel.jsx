@@ -9,17 +9,39 @@ import CollectionContextMenu from "../CollectionContextMenu";
 import { IoMdClose } from "react-icons/io";
 import { useCollections } from "@/contexts/CollectionContext";
 import { useTabs } from "@/contexts/TabsProvider";
+import { Button } from "../ui/button";
+import { useEffect, useMemo } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 const CollectionsPanel = () => {
   const { 
     collections, 
+    setCollections,
     addNewCollection, 
     deleteCollection,
     addRequestToCollection,
-    deleteRequestFromCollection,
+    deleteRequestFromCollection
   } = useCollections();
 
   const { openRequestInTab } = useTabs();
+  
+  useEffect(() => {
+    const getCollections = async () => {
+      await invoke(
+          "get_collections"
+        ).then((resp) => {
+          // for (let index = 0; index < resp.length; index++) {
+          //   const element = resp[index];
+          //   console.log(element);
+          // }
+          setCollections(resp);
+        }).catch((error) => {
+          console.log(error);
+        });
+    }
+
+    getCollections();
+  }, []);
   
   return (
     <div className="flex flex-col">
