@@ -61,6 +61,7 @@ const RequestTab = ({ request, collectionName }) => {
       setHeadersData(request.requestHeaders);
       setBodyFormData(request.requestBody.requestBodyFormData);
       setBodyType(request.requestBody.requestBodyType);
+      setBodyRawData(request.requestBody.requestBodyRaw);
     }
   }, [request]);
 
@@ -80,14 +81,14 @@ const RequestTab = ({ request, collectionName }) => {
     return { params: validParams, headers: validHeaders, body: validBody };
   };
 
-  const handleSave = (bodyData) => {
+  const handleSave = (requestBody) => {
     const updatedRequest = {
       requestName: request.requestName,
       requestType: selectedMethod,
       requestURL: URL,
       requestParams: paramsData,
       requestHeaders: headersData,
-      bodyData: bodyData
+      requestBody: requestBody
     };
     updateRequestInCollection(request.collectionId, request.requestId, updatedRequest);
   };
@@ -95,20 +96,20 @@ const RequestTab = ({ request, collectionName }) => {
   const handleSend = () => {
     const { params, headers, formBody } = getFormattedData();
 
-    const bodyData = {
+    const requestBody = {
       "requestBodyType": bodyType,
       "requestBodyFormData": formBody,
       "requestBodyRaw": bodyRawData
     };
 
-    handleSave(bodyData);
+    handleSave(requestBody);
 
     invoke("send_request", {
       methodType: selectedMethod,
       url: URL,
       paramsData: JSON.stringify(params),
       headersData: JSON.stringify(headers),
-      bodyData: JSON.stringify(bodyData),
+      bodyData: JSON.stringify(requestBody),
     })
       .then((resp) => {
         setHttpResponse(resp);

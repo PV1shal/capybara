@@ -93,22 +93,21 @@ export const CollectionsProvider = ({ children }) => {
   };
 
   const updateRequestInCollection = (collectionId, requestId, updatedRequest) => {
-    console.log(collectionId, requestId);
-    
     if (!collections[collectionId] || !collections[collectionId].requests[requestId]) {
         console.error("Collection or request not found");
         return;
     }
 
     const updatedRequestData = {
-        requestName: updatedRequest.requestName,
-        requestType: updatedRequest.requestType,
-        requestURL: updatedRequest.requestURL,
-        requestParams: updatedRequest.requestParams || collections[collectionId].requests[requestId].requestParams,
-        requestHeaders: updatedRequest.requestHeaders || collections[collectionId].requests[requestId].requestHeaders,
+        ...collections[collectionId].requests[requestId],
+        ...updatedRequest,
+        collectionId,
+        requestId,
         requestBody: {
             requestBodyType: updatedRequest.requestBody?.requestBodyType || "none",
-            requestBodyFormData: updatedRequest.requestBody?.requestBodyFormData || {},
+            requestBodyFormData: updatedRequest.requestBody?.requestBodyFormData || {
+              0: { key: "", value: "", description: "", isIncluded: true }
+            },
             requestBodyRaw: updatedRequest.requestBody?.requestBodyRaw || ""
         }
     };
@@ -132,14 +131,12 @@ export const CollectionsProvider = ({ children }) => {
             : tab
     ));
 
-    console.log(updateRequestInCollection);
-
     invoke("save_collection", {
         collectionId,
         collectionName: updatedCollection.collectionName,
         collectionData: JSON.stringify(updatedCollection)
     });
-  };
+};
 
   const openRequestInTab = (collectionId, requestId) => {
     const request = collections[collectionId].requests[requestId];

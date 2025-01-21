@@ -4,6 +4,9 @@ import Editor from '@monaco-editor/react';
 const CodeEditor = ({bodyRawData, setBodyRawData}) => {
     const [language, setLanguage] = useState('javascript');
 
+    console.log("Editor: ", bodyRawData);
+    
+
     const detectLanguage = (content) => {
         if (!content) return 'javascript';
         const trimmedContent = content.trim();
