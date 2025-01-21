@@ -31,6 +31,11 @@ export const CollectionsProvider = ({ children }) => {
     const newCollections = { ...collections };
     delete newCollections[collectionId];
     setCollections(newCollections);
+
+    invoke("delete_collection", {
+      collectionId: collectionId,
+      collectionName: collections[collectionId].collectionName
+    });
   };
 
   const addRequestToCollection = (collectionId, requestName, requestType, url) => {

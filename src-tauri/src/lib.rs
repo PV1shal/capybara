@@ -99,7 +99,7 @@ async fn send_request(
                 let raw_body = body_value.get("requestBodyRaw")
                     .and_then(Value::as_str)
                     .unwrap_or("{}");
-                
+
                 // Add Content-Type header for JSON
                 let req = req.header("Content-Type", "application/json");
                 
@@ -240,6 +240,40 @@ async fn get_collections ( app_handler: AppHandle ) -> Result<Value, String> {
     Ok(collections)
 }
 
+#[tauri::command]
+fn delete_collection(app_handler: AppHandle, collection_id: &str, collection_name: &str) -> Result<(), String> {
+    let app_data_dir = match app_handler.path().app_data_dir() {
+        Ok(dir) => dir,
+        Err(e) => {
+            let err = format!("Failed to get app data directory: {}", e);
+            println!("{}", err);
+            return Err(err);
+        }
+    };
+    
+    if !app_data_dir.exists() {
+        if let Err(e) = fs::create_dir_all(&app_data_dir) {
+            let error = format!("Error creating app directory: {} {:?}", e, app_data_dir);
+            println!("{}", error);
+            return Err(error);
+        }
+    }
+    
+    let collections_dir: PathBuf = app_data_dir.join("collections");
+    if !collections_dir.exists() {
+        if let Err(e) = fs::create_dir_all(&collections_dir) {
+            let error = format!("Error creating collections directory: {} {:?}", e, collections_dir);
+            println!("{}", error);
+            return Err(error);
+        }
+    }
+
+    let file_path = collections_dir.join(format!("{}_{}.json", collection_id, collection_name));
+    let _ = fs::remove_file(&file_path);
+    
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -249,7 +283,8 @@ pub fn run() {
             greet,
             send_request,
             save_collection,
-            get_collections
+            get_collections,
+            delete_collection
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
